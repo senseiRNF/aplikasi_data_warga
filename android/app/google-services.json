@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "791606378535",
+    "project_id": "aplikasidesapalasari",
+    "storage_bucket": "aplikasidesapalasari.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:791606378535:android:2fcd238a31b55e05430e02",
+        "android_client_info": {
+          "package_name": "com.eastbuitenzorg.aplikasi_data_warga"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "791606378535-ccnf2s864si6f3iv1gkil2p87plj11eh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.eastbuitenzorg.aplikasi_data_warga",
+            "certificate_hash": "c5948280eadeb1de08542c75ecc77c1baf86eaba"
+          }
+        },
+        {
+          "client_id": "791606378535-50o65h1ijdudp7i3rcqeppsa8ep5cc2s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFsCGH208B8ow0VjpROFQFS82IkJ-ReKs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "791606378535-50o65h1ijdudp7i3rcqeppsa8ep5cc2s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
