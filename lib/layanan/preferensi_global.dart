@@ -6,12 +6,12 @@ Future<SharedPreferences> preferensi = SharedPreferences.getInstance();
 ///
 /// atur preferensi
 
-Future<bool> aturSurel(String surel) async {
+Future<bool> aturEmail(String email) async {
   bool hasil;
 
   final SharedPreferences prefs = await preferensi;
 
-  await prefs.setString('surel', surel).then((value) {
+  await prefs.setString('email', email).then((value) {
     hasil = true;
   }).catchError((e) {
     print(e);
@@ -38,14 +38,30 @@ Future<bool> aturNama(String nama) async {
   return hasil;
 }
 
+Future<bool> aturJabatan(String jabatan) async {
+  bool hasil;
+
+  final SharedPreferences prefs = await preferensi;
+
+  await prefs.setString('jabatan', jabatan).then((value) {
+    hasil = true;
+  }).catchError((e) {
+    print(e);
+
+    hasil = false;
+  });
+
+  return hasil;
+}
+
 /// tampilkan preferensi
 
-Future<String> tampilkanSurel() async {
+Future<String> tampilkanEmail() async {
   String hasil;
 
   final SharedPreferences prefs = await preferensi;
 
-  hasil = prefs.getString('surel');
+  hasil = prefs.getString('email');
 
   return hasil;
 }
@@ -56,6 +72,16 @@ Future<String> tampilkanNama() async {
   final SharedPreferences prefs = await preferensi;
 
   hasil = prefs.getString('nama');
+
+  return hasil;
+}
+
+Future<String> tampilkanJabatan() async {
+  String hasil;
+
+  final SharedPreferences prefs = await preferensi;
+
+  hasil = prefs.getString('jabatan');
 
   return hasil;
 }

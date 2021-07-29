@@ -1,144 +1,16 @@
 import 'package:aplikasi_data_warga/fungsi/fungsi_global.dart';
+import 'package:aplikasi_data_warga/layanan/layanan_firestore.dart';
 import 'package:aplikasi_data_warga/layanan/variable_global.dart';
 import 'package:aplikasi_data_warga/widget/widget_global.dart';
 import 'package:flutter/material.dart';
 
 /// Widget dengan keadaan (stateful Widget)
 
-class LatarManajemenPengguna extends StatefulWidget {
-  @override
-  _LatarManajemenPenggunaState createState() => _LatarManajemenPenggunaState();
-}
-
-class _LatarManajemenPenggunaState extends State<LatarManajemenPengguna> {
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          child: Stack(
-            children: [
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Image.asset(
-                  'aset/gambar/latar_belakang.png',
-                  fit: BoxFit.fitWidth,
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10.0,),
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(5.0,),
-                          child: Material(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(100.0,),
-                            ),
-                            child: InkWell(
-                              onTap: () {
-                                tutupHalaman(context, null);
-                              },
-                              borderRadius: BorderRadius.circular(100.0,),
-                              child: Padding(
-                                padding: EdgeInsets.all(15.0,),
-                                child: Icon(
-                                  Icons.arrow_back,
-                                  size: 30.0,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: TeksGlobal(
-                            isi: 'Manajemen Pengguna',
-                            ukuran: 16.0,
-                            tebal: true,
-                            posisi: TextAlign.start,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10.0,),
-                    child: Material(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.0,),
-                      ),
-                      child: InkWell(
-                        onTap: () {
-                          pindahKeHalaman(context, FormUserSistem(dataAnggota: []), (panggilKembali) {
-
-                          });
-                        },
-                        borderRadius: BorderRadius.circular(5.0,),
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5.0,)
-                          ),
-                          elevation: 10.0,
-                          child: Padding(
-                            padding: EdgeInsets.all(10.0,),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: TeksGlobal(
-                                    isi: 'Tambah Pengguna',
-                                    ukuran: 16.0,
-                                  ),
-                                ),
-                                Icon(
-                                  Icons.add,
-                                  size: 30.0,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10.0,
-                  ),
-                  Expanded(
-                    child: ListView(
-
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-}
-
 class FormUserSistem extends StatefulWidget {
-  final List dataAnggota;
+  final List dataUser;
 
   FormUserSistem({
-    @required this.dataAnggota,
+    @required this.dataUser,
   });
 
   @override
@@ -150,137 +22,165 @@ class _FormUserSistemState extends State<FormUserSistem> {
   TextEditingController pengaturEmail = new TextEditingController();
   TextEditingController pengaturJabatan = new TextEditingController();
 
+  bool memuat = false;
+
+  String idDokumen;
+
   @override
   void initState() {
     super.initState();
+
+    if(widget.dataUser.isNotEmpty) {
+      setState(() {
+        idDokumen = widget.dataUser[0];
+        pengaturNama.text = widget.dataUser[1];
+        pengaturEmail.text = widget.dataUser[2];
+        pengaturJabatan.text = widget.dataUser[3];
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: Stack(
+        child: LatarBelakangGlobal(
+          tampilan: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Image.asset(
-                      'aset/gambar/latar_belakang.png',
-                      fit: BoxFit.fitWidth,
-                    ),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.all(5.0,),
-                            child: Material(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(100.0,),
-                              ),
-                              child: InkWell(
-                                onTap: () {
-                                  tutupHalaman(context, null);
-                                },
-                                borderRadius: BorderRadius.circular(100.0,),
-                                child: Padding(
-                                  padding: EdgeInsets.all(15.0,),
-                                  child: Icon(
-                                    Icons.arrow_back,
-                                    size: 30.0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: TeksGlobal(
-                              isi: 'Data Pengguna',
-                              ukuran: 18.0,
-                            ),
-                          )
-                        ],
+                  Padding(
+                    padding: EdgeInsets.all(5.0,),
+                    child: Material(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100.0,),
                       ),
-                      Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          tutupHalaman(context, null);
+                        },
+                        borderRadius: BorderRadius.circular(100.0,),
                         child: Padding(
-                          padding: EdgeInsets.all(5.0,),
-                          child: Padding(
-                            padding: EdgeInsets.all(5.0,),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                InputTeksGlobal(
-                                  label: 'Nama Lengkap',
-                                  controller: pengaturNama,
-                                  kapitalisasi: TextCapitalization.characters,
-                                ),
-                                SizedBox(
-                                  height: 10.0,
-                                ),
-                                InputTeksGlobal(
-                                  label: 'E-mail',
-                                  controller: pengaturEmail,
-                                  jenisInput: TextInputType.emailAddress,
-                                  kapitalisasi: TextCapitalization.characters,
-                                ),
-                                SizedBox(
-                                  height: 10.0,
-                                ),
-                                InputOpsi(
-                                  label: 'Jabatan',
-                                  controller: pengaturJabatan,
-                                  daftarOpsi: daftarJabatan,
-                                  fungsiGanti: (hasil) {
-                                    if(hasil != null) {
-                                      setState(() {
-                                        pengaturJabatan.text = hasil;
-                                      });
-                                    }
-                                  },
-                                ),
-                              ],
-                            ),
+                          padding: EdgeInsets.all(15.0,),
+                          child: Icon(
+                            Icons.arrow_back,
+                            size: 30.0,
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.all(5.0,),
-                        child: TombolGlobal(
-                          judul: 'Simpan',
-                          fungsiTekan: () {
-                            if(pengaturNama.text != ''
-                                && pengaturEmail.text != ''
-                                && pengaturJabatan.text != '') {
-                              dialogOpsi(context, 'Tambahkan pengguna baru, Anda yakin?', () {
-                                tutupHalaman(context, null);
-
-                                tutupHalaman(context, [
-                                  pengaturNama.text,
-                                  pengaturEmail.text,
-                                  pengaturJabatan.text,
-                                ]);
-                              }, () {
-                                tutupHalaman(context, null);
+                    ),
+                  ),
+                  Expanded(
+                    child: TeksGlobal(
+                      isi: 'Data Pengguna',
+                      ukuran: 18.0,
+                    ),
+                  )
+                ],
+              ),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.all(5.0,),
+                  child: Padding(
+                    padding: EdgeInsets.all(5.0,),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        InputTeksGlobal(
+                          label: 'Nama Lengkap',
+                          controller: pengaturNama,
+                          kapitalisasi: TextCapitalization.words,
+                        ),
+                        SizedBox(
+                          height: 10.0,
+                        ),
+                        InputTeksGlobal(
+                          label: 'E-mail',
+                          controller: pengaturEmail,
+                          jenisInput: TextInputType.emailAddress,
+                        ),
+                        SizedBox(
+                          height: 10.0,
+                        ),
+                        InputOpsi(
+                          label: 'Jabatan',
+                          controller: pengaturJabatan,
+                          daftarOpsi: daftarJabatan,
+                          fungsiGanti: (hasil) {
+                            if(hasil != null) {
+                              setState(() {
+                                pengaturJabatan.text = hasil;
                               });
                             }
                           },
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
+              Padding(
+                padding: EdgeInsets.all(5.0,),
+                child: !memuat ?
+                TombolGlobal(
+                  judul: 'Simpan',
+                  fungsiTekan: () {
+                    if(pengaturNama.text != '' && pengaturEmail.text != '' && pengaturJabatan.text != '') {
+                      dialogOpsi(context, 'Tambahkan pengguna baru, Anda yakin?', () async {
+                        tutupHalaman(context, null);
+
+                        setState(() {
+                          memuat = true;
+                        });
+
+                        if(idDokumen == null) {
+                          await simpanUser(pengaturEmail.text, pengaturNama.text, pengaturJabatan.text, () {
+                            tutupHalaman(context, null);
+                          }, () {
+                            setState(() {
+                              memuat = false;
+                            });
+
+                            dialogOK(context, 'Terjadi kesalahan, gagal menyimpan data, silahkan coba lagi', () {
+                              tutupHalaman(context, null);
+                            }, () {
+
+                            });
+                          });
+                        } else {
+                          await ubahUser(idDokumen, pengaturEmail.text, pengaturNama.text, pengaturJabatan.text, () {
+                            tutupHalaman(context, null);
+                          }, () {
+                            setState(() {
+                              memuat = false;
+                            });
+
+                            dialogOK(context, 'Terjadi kesalahan, gagal menyimpan data, silahkan coba lagi', () {
+                              tutupHalaman(context, null);
+                            }, () {
+
+                            });
+                          });
+                        }
+                      }, () {
+                        tutupHalaman(context, null);
+                      });
+                    } else {
+                      dialogOK(context, 'Harap untuk mengisi seluruh data sebelum menyimpan', () {
+                        tutupHalaman(context, null);
+                      }, () {
+
+                      });
+                    }
+                  },
+                ) : IndikatorProgressGlobal(),
+              ),
+            ],
+          ),
         ),
       ),
     );

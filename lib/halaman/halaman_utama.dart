@@ -1,6 +1,11 @@
+import 'package:aplikasi_data_warga/fungsi/fungsi_global.dart';
 import 'package:aplikasi_data_warga/fungsi/fungsi_spesifik/fungsi_halaman_utama.dart';
+import 'package:aplikasi_data_warga/halaman/halaman_manajemen_penduduk.dart';
+import 'package:aplikasi_data_warga/halaman/halaman_manajemen_pengguna.dart';
+import 'package:aplikasi_data_warga/halaman/halaman_pembuka.dart';
+import 'package:aplikasi_data_warga/layanan/layanan_google_sign_in.dart';
+import 'package:aplikasi_data_warga/layanan/preferensi_global.dart';
 import 'package:aplikasi_data_warga/widget/widget_global.dart';
-import 'package:aplikasi_data_warga/widget/widget_spesifik/widget_halaman_utama.dart';
 import 'package:flutter/material.dart';
 
 class HalamanUtama extends StatefulWidget {
@@ -14,16 +19,18 @@ class _HalamanUtamaState extends State<HalamanUtama> {
   bool memuat = false;
 
   String nama;
-  String surel;
+  String email;
+  String jabatan;
 
   @override
   void initState() {
     super.initState();
 
-    Future.delayed(Duration(seconds: 0), () => muatHalamanUtama((hasilNama, hasilSurel) {
+    Future.delayed(Duration(seconds: 0), () => muatHalamanUtama((hasilNama, hasilEmail, hasilJabatan) async {
       setState(() {
         nama = hasilNama;
-        surel = hasilSurel;
+        email = hasilEmail;
+        jabatan = hasilJabatan;
       });
     }));
   }
@@ -56,14 +63,196 @@ class _HalamanUtamaState extends State<HalamanUtama> {
     }
   }
 
+  Widget cekWidget(String jabatan) {
+    Widget hasil;
+
+    switch(jabatan) {
+      case 'Admin':
+        hasil = Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0,),
+              child: TombolMenuBerlatar(
+                fungsiTombol: () {
+                  pindahKeHalaman(context, HalamanManajemenPengguna(), (panggilKembali) {
+
+                  });
+                },
+                judul: 'Manajemen Pengguna Sistem',
+                gambar: 'aset/gambar/gambar_tombol_1.png',
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0,),
+              child: TombolMenuBerlatar(
+                fungsiTombol: () {
+                  pindahKeHalaman(context, HalamanManajemenPenduduk(), (panggilKembali) {
+
+                  });
+                },
+                judul: 'Manajemen Data Penduduk',
+                gambar: 'aset/gambar/gambar_tombol_2.png',
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0,),
+              child: TombolMenuBerlatar(
+                fungsiTombol: () {
+
+                },
+                judul: 'Manajemen Berkas Desa',
+                gambar: 'aset/gambar/gambar_tombol_3.png',
+              ),
+            ),
+          ],
+        );
+        break;
+      case 'Petugas Desa':
+        hasil = Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0,),
+              child: TombolMenuBerlatar(
+                fungsiTombol: () {
+                  pindahKeHalaman(context, HalamanManajemenPenduduk(), (panggilKembali) {
+
+                  });
+                },
+                judul: 'Manajemen Data Penduduk',
+                gambar: 'aset/gambar/gambar_tombol_2.png',
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0,),
+              child: TombolMenuBerlatar(
+                fungsiTombol: () {
+
+                },
+                judul: 'Manajemen Berkas Desa',
+                gambar: 'aset/gambar/gambar_tombol_3.png',
+              ),
+            ),
+          ],
+        );
+        break;
+      case 'Kepala Desa':
+        hasil = Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0,),
+              child: TombolMenuBerlatar(
+                fungsiTombol: () {
+
+                },
+                judul: 'Lihat Laporan Desa',
+                gambar: 'aset/gambar/gambar_tombol_3.png',
+              ),
+            ),
+          ],
+        );
+        break;
+      default:
+        hasil = Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IndikatorProgressGlobal(),
+          ],
+        );
+        break;
+    }
+
+    return hasil;
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: keluarAplikasi,
       child: Scaffold(
         body: SafeArea(
-          child: LatarUtamaAdmin(
-            namaUser: nama,
+          child: LatarBelakangGlobal(
+            tampilan: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(10.0,),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height / 8,
+                        child: Image.asset(
+                          'aset/gambar/gambar_karakter.png',
+                          fit: BoxFit.fitHeight,
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 5.0,),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              TeksGlobal(
+                                isi: 'Aplikasi desa Palasari',
+                                ukuran: 16.0,
+                                tebal: true,
+                                posisi: TextAlign.center,
+                              ),
+                              SizedBox(
+                                height: 10.0,
+                              ),
+                              TeksGlobal(
+                                isi: 'Selamat Datang, $nama',
+                                ukuran: 14.0,
+                                posisi: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(5.0,),
+                        child: Material(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(100.0,),
+                          ),
+                          child: InkWell(
+                            onTap: () {
+                              dialogOpsi(context, 'Keluar dari sesi saat ini, Anda yakin?', () async {
+                                await googleSignIn.disconnect().then((keluar) async {
+                                  await hapusPreferensi().then((hasil) {
+                                    if(hasil) {
+                                      tutupHalaman(context, null);
+                                      timpaDenganHalaman(context, HalamanPembuka());
+                                    }
+                                  });
+                                });
+                              }, () {
+                                tutupHalaman(context, null);
+                              });
+                            },
+                            borderRadius: BorderRadius.circular(100.0,),
+                            child: Padding(
+                              padding: EdgeInsets.all(15.0,),
+                              child: Icon(
+                                Icons.exit_to_app,
+                                color: Colors.red,
+                                size: 30.0,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: cekWidget(jabatan),
+                ),
+              ],
+            ),
           ),
         ),
       ),

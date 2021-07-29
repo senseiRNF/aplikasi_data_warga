@@ -528,6 +528,30 @@ class TombolMenuBerlatar extends StatelessWidget {
   }
 }
 
+class LatarBelakangGlobal extends StatelessWidget {
+  final Widget tampilan;
+
+  LatarBelakangGlobal({
+    @required this.tampilan,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        SizedBox(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: Image.asset(
+            'aset/gambar/latar_belakang.png',
+            fit: BoxFit.fitWidth,
+          ),
+        ),
+        tampilan,
+      ],
+    );
+  }
+}
 /// Widget dengan keadaan (stateful Widget)
 
 class InputKataSandiGlobal extends StatefulWidget {

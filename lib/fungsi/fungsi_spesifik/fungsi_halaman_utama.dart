@@ -3,9 +3,10 @@ import 'package:aplikasi_data_warga/layanan/preferensi_global.dart';
 
 void muatHalamanUtama(Function fungsiMuat) async {
   String nama = await tampilkanNama();
-  String surel = await tampilkanSurel();
+  String email = await tampilkanEmail();
+  String jabatan = await tampilkanJabatan();
 
-  fungsiMuat(nama, surel);
+  fungsiMuat(nama, email, jabatan);
 }
 
 /*

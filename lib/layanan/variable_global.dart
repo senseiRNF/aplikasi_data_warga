@@ -5,6 +5,7 @@ List daftarJenisKelamin = [
 
 List daftarJabatan = [
   'Admin',
+  'Petugas Desa',
   'Kepala Desa',
 ];
 

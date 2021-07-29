@@ -5,7 +5,7 @@ import 'package:aplikasi_data_warga/layanan/preferensi_global.dart';
 import 'package:flutter/material.dart';
 
 void muatHalamanPembuka(BuildContext context) async {
-  await tampilkanSurel().then((value) async {
+  await tampilkanEmail().then((value) async {
     if(value != null) {
       timpaDenganHalaman(context, HalamanUtama());
     } else {

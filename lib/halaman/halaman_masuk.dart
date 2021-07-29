@@ -1,5 +1,6 @@
 import 'package:aplikasi_data_warga/fungsi/fungsi_global.dart';
 import 'package:aplikasi_data_warga/halaman/halaman_utama.dart';
+import 'package:aplikasi_data_warga/layanan/layanan_firestore.dart';
 import 'package:aplikasi_data_warga/layanan/layanan_google_sign_in.dart';
 import 'package:aplikasi_data_warga/layanan/preferensi_global.dart';
 import 'package:aplikasi_data_warga/widget/widget_global.dart';
@@ -22,11 +23,34 @@ class _HalamanMasukState extends State<HalamanMasuk> {
 
     googleSignIn.onCurrentUserChanged.listen((akun) {
       if(akun != null) {
-        akun.authentication.then((otentikasi) {
-          aturSurel(akun.email);
-          aturNama(akun.displayName);
+        akun.authentication.then((otentikasi) async {
+          await loginSistem(akun.email).then((hasil) async {
+            if(hasil.isNotEmpty) {
+              await aturNama(hasil[0]).then((value) async {
+                await aturEmail(hasil[1]).then((value) async {
+                  await aturJabatan(hasil[2]).then((value) async {
+                    timpaDenganHalaman(context, HalamanUtama());
+                  });
+                });
+              });
+            } else {
+              await googleSignIn.disconnect().then((keluar) async {
+                await hapusPreferensi().then((hasil) {
+                  if(hasil) {
+                    setState(() {
+                      memuat = false;
+                    });
 
-          timpaDenganHalaman(context, HalamanUtama());
+                    dialogOK(context, 'Maaf, akun Anda tidak terdaftar di sistem kami, untuk lebih lanjut silahkan hubungi Admin', () {
+                      tutupHalaman(context, null);
+                    }, () {
+
+                    });
+                  }
+                });
+              });
+            }
+          });
         });
       }
     });
@@ -68,15 +92,53 @@ class _HalamanMasukState extends State<HalamanMasuk> {
       onWillPop: keluarAplikasi,
       child: Scaffold(
         body: SafeArea(
-          child: LatarMasuk(
-            memuat: memuat,
-            fungsiTekan: () {
-              setState(() {
-                memuat = true;
-              });
+          child: LatarBelakangGlobal(
+            tampilan: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height / 2,
+                        child: Image.asset(
+                          'aset/gambar/gambar_karakter.png',
+                          fit: BoxFit.fitHeight,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      TeksGlobal(
+                        isi: 'Selamat Datang\ndi Aplikasi Desa Palasari Kecamatan Legok',
+                        ukuran: 16.0,
+                        tebal: true,
+                        posisi: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+                !memuat ?
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0,),
+                  child: TombolMasukAdmin(
+                    fungsiTombol: () {
+                      setState(() {
+                        memuat = true;
+                      });
 
-              masukDenganGoogle(context);
-            },
+                      masukDenganGoogle(context, () {
+                        setState(() {
+                          memuat = false;
+                        });
+                      });
+                    },
+                  ),
+                ) :
+                IndikatorProgressGlobal(),
+              ],
+            ),
           ),
         ),
       ),

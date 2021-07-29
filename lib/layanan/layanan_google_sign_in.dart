@@ -8,9 +8,13 @@ GoogleSignIn googleSignIn = GoogleSignIn(
   ],
 );
 
-Future<void> masukDenganGoogle(BuildContext context) async {
+Future<void> masukDenganGoogle(BuildContext context, Function fungsiBatal) async {
   try {
-    await googleSignIn.signIn();
+    await googleSignIn.signIn().then((value) {
+      if(value == null) {
+        fungsiBatal();
+      }
+    });
   } catch(error) {
     print('ERROR pada layanan Sign In Google: $error');
   }
