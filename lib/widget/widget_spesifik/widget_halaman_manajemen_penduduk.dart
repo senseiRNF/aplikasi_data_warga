@@ -41,22 +41,20 @@ class _FormKartuKeluargaState extends State<FormKartuKeluarga> {
     super.initState();
 
     if(widget.dataKK.isNotEmpty) {
-      print(widget.dataKK[0]);
-      print(widget.dataKK[1]);
-      print(widget.dataKK[2]);
-
       setState(() {
         idDokumen = widget.dataKK[0];
         pengaturNoHp.text = widget.dataKK[1]['no_hp'];
         pengaturNoKK.text = widget.dataKK[1]['no_kk'];
-        pengaturAlamat.text = widget.dataKK[1][2];
-        pengaturRT.text = widget.dataKK[1][3];
-        pengaturRW.text = widget.dataKK[1][4];
-        pengaturKodePos.text = widget.dataKK[1][5];
-        pengaturKelurahan.text = widget.dataKK[1][6];
-        pengaturKecamatan.text = widget.dataKK[1][7];
-        pengaturKabupaten.text = widget.dataKK[1][8];
-        pengaturProvinsi.text = widget.dataKK[1][9];
+        pengaturAlamat.text = widget.dataKK[1]['alamat'];
+        pengaturRT.text = widget.dataKK[1]['rt'];
+        pengaturRW.text = widget.dataKK[1]['rw'];
+        pengaturKodePos.text = widget.dataKK[1]['kode_pos'];
+        pengaturKelurahan.text = widget.dataKK[1]['desa/kelurahan'];
+        pengaturKecamatan.text = widget.dataKK[1]['kecamatan'];
+        pengaturKabupaten.text = widget.dataKK[1]['kabupaten/kota'];
+        pengaturProvinsi.text = widget.dataKK[1]['provinsi'];
+
+        daftarAnggotaKeluarga = widget.dataKK[2];
       });
     }
   }
@@ -350,7 +348,29 @@ class _FormKartuKeluargaState extends State<FormKartuKeluarga> {
                               });
                             });
                           } else {
+                            await ubahKartuKeluarga(idDokumen, pengaturNoHp.text, [
+                              pengaturNoKK.text,
+                              pengaturAlamat.text,
+                              pengaturRT.text,
+                              pengaturRW.text,
+                              pengaturKodePos.text,
+                              pengaturKelurahan.text,
+                              pengaturKecamatan.text,
+                              pengaturKabupaten.text,
+                              pengaturProvinsi.text,
+                            ], daftarAnggotaKeluarga, () {
+                              tutupHalaman(context, null);
+                            }, () {
+                              setState(() {
+                                memuat = false;
+                              });
 
+                              dialogOK(context, 'Terjadi kesalahan, gagal menyimpan data, silahkan coba lagi', () {
+                                tutupHalaman(context, null);
+                              }, () {
+
+                              });
+                            });
                           }
                         }, () {
                           tutupHalaman(context, null);
@@ -705,49 +725,43 @@ class _FormDaftarAnggotaKeluargaState extends State<FormDaftarAnggotaKeluarga> {
                                 && pengaturKewarganegaraan.text != ''
                                 && pengaturNamaAyah.text != ''
                                 && pengaturNamaIbu.text != '') {
-                              dialogOpsi(context, 'Tambahkan data anggota keluarga, Anda yakin?', () {
-                                tutupHalaman(context, null);
-
-                                if(widget.dataAnggota.isEmpty) {
-                                  tutupHalaman(context, [
-                                    pengaturNama.text,
-                                    pengaturNIK.text,
-                                    pengaturJenisKelamin.text,
-                                    pengaturTempatLahir.text,
-                                    DateFormat('yyyy-MM-dd').format(tangalLahir),
-                                    pengaturAgama.text,
-                                    pengaturPendidikan.text,
-                                    pengaturProfesi.text,
-                                    pengaturStatusPerkawinan.text,
-                                    pengaturStatusDalamKeluarga.text,
-                                    pengaturKewarganegaraan.text,
-                                    pengaturNoPaspor.text,
-                                    pengaturNoKITAP.text,
-                                    pengaturNamaAyah.text,
-                                    pengaturNamaIbu.text,
-                                  ]);
-                                } else {
-                                  tutupHalaman(context, [
-                                    pengaturNama.text,
-                                    pengaturNIK.text,
-                                    pengaturJenisKelamin.text,
-                                    pengaturTempatLahir.text,
-                                    DateFormat('yyyy-MM-dd').format(tangalLahir),
-                                    pengaturAgama.text,
-                                    pengaturPendidikan.text,
-                                    pengaturProfesi.text,
-                                    pengaturStatusPerkawinan.text,
-                                    pengaturStatusDalamKeluarga.text,
-                                    pengaturKewarganegaraan.text,
-                                    pengaturNoPaspor.text,
-                                    pengaturNoKITAP.text,
-                                    pengaturNamaAyah.text,
-                                    pengaturNamaIbu.text,
-                                  ]);
-                                }
-                              }, () {
-                                tutupHalaman(context, null);
-                              });
+                              if(widget.dataAnggota.isEmpty) {
+                                tutupHalaman(context, [
+                                  pengaturNama.text,
+                                  pengaturNIK.text,
+                                  pengaturJenisKelamin.text,
+                                  pengaturTempatLahir.text,
+                                  DateFormat('yyyy-MM-dd').format(tangalLahir),
+                                  pengaturAgama.text,
+                                  pengaturPendidikan.text,
+                                  pengaturProfesi.text,
+                                  pengaturStatusPerkawinan.text,
+                                  pengaturStatusDalamKeluarga.text,
+                                  pengaturKewarganegaraan.text,
+                                  pengaturNoPaspor.text,
+                                  pengaturNoKITAP.text,
+                                  pengaturNamaAyah.text,
+                                  pengaturNamaIbu.text,
+                                ]);
+                              } else {
+                                tutupHalaman(context, [
+                                  pengaturNama.text,
+                                  pengaturNIK.text,
+                                  pengaturJenisKelamin.text,
+                                  pengaturTempatLahir.text,
+                                  DateFormat('yyyy-MM-dd').format(tangalLahir),
+                                  pengaturAgama.text,
+                                  pengaturPendidikan.text,
+                                  pengaturProfesi.text,
+                                  pengaturStatusPerkawinan.text,
+                                  pengaturStatusDalamKeluarga.text,
+                                  pengaturKewarganegaraan.text,
+                                  pengaturNoPaspor.text,
+                                  pengaturNoKITAP.text,
+                                  pengaturNamaAyah.text,
+                                  pengaturNamaIbu.text,
+                                ]);
+                              }
                             }
                           },
                         ),

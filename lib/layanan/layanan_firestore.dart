@@ -321,12 +321,10 @@ Future<void> ubahKartuKeluarga(String idDokumen, String nomorHp, List headerKK, 
         'no_kitap': anggotaKeluarga[i][12],
         'nama_ayah': anggotaKeluarga[i][13],
         'nama_ibu': anggotaKeluarga[i][14],
-      }).then((value) {
-        fungsiBerhasil();
-      }).catchError((onError) {
-        fungsiGagal();
       });
     }
+
+    fungsiBerhasil();
   }).catchError((error) {
     fungsiGagal();
   });
@@ -408,7 +406,26 @@ class LihatDaftarKK extends StatelessWidget {
             List dataAnggota = [];
 
             FirebaseFirestore.instance.collection('data_penduduk').doc(document.id).collection('anggota_keluarga').get().then((querySnapshot) {
-              dataAnggota = querySnapshot.docs.map((doc) => doc.data()).toList();
+              List objekDataAnggota = querySnapshot.docs.map((doc) => doc.data()).toList();
+              for(int i = 0; i < objekDataAnggota.length; i++) {
+                dataAnggota.add([
+                  objekDataAnggota[i]['nama'],
+                  objekDataAnggota[i]['nik'],
+                  objekDataAnggota[i]['jenis_kelamin'],
+                  objekDataAnggota[i]['tempat_lahir'],
+                  objekDataAnggota[i]['tanggal_lahir'],
+                  objekDataAnggota[i]['agama'],
+                  objekDataAnggota[i]['pendidikan'],
+                  objekDataAnggota[i]['profesi'],
+                  objekDataAnggota[i]['status_perkawinan'],
+                  objekDataAnggota[i]['status_dalam_keluarga'],
+                  objekDataAnggota[i]['kewarganegaraan'],
+                  objekDataAnggota[i]['no_paspor'],
+                  objekDataAnggota[i]['no_kitap'],
+                  objekDataAnggota[i]['nama_ayah'],
+                  objekDataAnggota[i]['nama_ibu'],
+                ]);
+              }
             });
 
             return Padding(
