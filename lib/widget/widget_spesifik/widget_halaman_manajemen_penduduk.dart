@@ -1,4 +1,5 @@
 import 'package:aplikasi_data_warga/fungsi/fungsi_global.dart';
+import 'package:aplikasi_data_warga/layanan/layanan_firestore.dart';
 import 'package:aplikasi_data_warga/layanan/variable_global.dart';
 import 'package:aplikasi_data_warga/widget/widget_global.dart';
 import 'package:flutter/material.dart';
@@ -6,143 +7,19 @@ import 'package:intl/intl.dart';
 
 /// Widget dengan keadaan (stateful Widget)
 
-class LatarManajemenPenduduk extends StatefulWidget {
-  @override
-  _LatarManajemenPendudukState createState() => _LatarManajemenPendudukState();
-}
-
-class _LatarManajemenPendudukState extends State<LatarManajemenPenduduk> {
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          child: Stack(
-            children: [
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Image.asset(
-                  'aset/gambar/latar_belakang.png',
-                  fit: BoxFit.fitWidth,
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10.0,),
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(5.0,),
-                          child: Material(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(100.0,),
-                            ),
-                            child: InkWell(
-                              onTap: () {
-                                tutupHalaman(context, null);
-                              },
-                              borderRadius: BorderRadius.circular(100.0,),
-                              child: Padding(
-                                padding: EdgeInsets.all(15.0,),
-                                child: Icon(
-                                  Icons.arrow_back,
-                                  size: 30.0,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: TeksGlobal(
-                            isi: 'Manajemen Data Penduduk',
-                            ukuran: 16.0,
-                            tebal: true,
-                            posisi: TextAlign.start,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10.0,),
-                    child: Material(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.0,),
-                      ),
-                      child: InkWell(
-                        onTap: () {
-                          pindahKeHalaman(context, FormKartuKeluarga(), (panggilKembali) {
-
-                          });
-                        },
-                        borderRadius: BorderRadius.circular(5.0,),
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0,)
-                          ),
-                          elevation: 10.0,
-                          child: Padding(
-                            padding: EdgeInsets.all(10.0,),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: TeksGlobal(
-                                    isi: 'Tambah Data Penduduk',
-                                    ukuran: 16.0,
-                                  ),
-                                ),
-                                Icon(
-                                  Icons.add,
-                                  size: 30.0,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10.0,
-                  ),
-                  Expanded(
-                    child: ListView(
-
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-}
-
-//-----------------------------------------------------------------//
-
 class FormKartuKeluarga extends StatefulWidget {
+  final List dataKK;
+
+  FormKartuKeluarga({
+    @required this.dataKK,
+  });
+
   @override
   _FormKartuKeluargaState createState() => _FormKartuKeluargaState();
 }
 
 class _FormKartuKeluargaState extends State<FormKartuKeluarga> {
+  TextEditingController pengaturNoHp = new TextEditingController();
   TextEditingController pengaturNoKK = new TextEditingController();
   TextEditingController pengaturAlamat = new TextEditingController();
   TextEditingController pengaturRT = new TextEditingController();
@@ -153,45 +30,48 @@ class _FormKartuKeluargaState extends State<FormKartuKeluarga> {
   TextEditingController pengaturKabupaten = new TextEditingController();
   TextEditingController pengaturProvinsi = new TextEditingController();
 
-  List daftarAnggotaKeluarga = [
-    'Tambah Baru',
-  ];
-
-  DateTime waktuTekanKembali;
+  List daftarAnggotaKeluarga = [];
 
   bool memuat = false;
+
+  String idDokumen;
 
   @override
   void initState() {
     super.initState();
+
+    if(widget.dataKK.isNotEmpty) {
+      print(widget.dataKK[0]);
+      print(widget.dataKK[1]);
+      print(widget.dataKK[2]);
+
+      setState(() {
+        idDokumen = widget.dataKK[0];
+        pengaturNoHp.text = widget.dataKK[1]['no_hp'];
+        pengaturNoKK.text = widget.dataKK[1]['no_kk'];
+        pengaturAlamat.text = widget.dataKK[1][2];
+        pengaturRT.text = widget.dataKK[1][3];
+        pengaturRW.text = widget.dataKK[1][4];
+        pengaturKodePos.text = widget.dataKK[1][5];
+        pengaturKelurahan.text = widget.dataKK[1][6];
+        pengaturKecamatan.text = widget.dataKK[1][7];
+        pengaturKabupaten.text = widget.dataKK[1][8];
+        pengaturProvinsi.text = widget.dataKK[1][9];
+      });
+    }
   }
 
   Future<bool> keluarAplikasi() {
     if(!memuat) {
-      DateTime sekarang = DateTime.now();
-
-      if(waktuTekanKembali == null || sekarang.difference(waktuTekanKembali) > Duration(seconds: 2)) {
-        waktuTekanKembali = sekarang;
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            duration: Duration(seconds: 2),
-            content: TeksGlobal(
-              isi: 'Tekan sekali lagi untuk keluar',
-              warna: Colors.white,
-            ),
-          ),
-        );
-
-        return Future.value(false);
-      } else {
-        waktuTekanKembali = null;
-
-        return Future.value(true);
-      }
-    } else {
-      return Future.value(false);
+      dialogOpsi(context, 'Keluar tanpa menyimpan data, Anda yakin?', () {
+        tutupHalaman(context, null);
+        tutupHalaman(context, null);
+      }, () {
+        tutupHalaman(context, null);
+      });
     }
+
+    return Future.value(false);
   }
 
   @override
@@ -200,216 +80,294 @@ class _FormKartuKeluargaState extends State<FormKartuKeluarga> {
       onWillPop: keluarAplikasi,
       child: Scaffold(
         body: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: Stack(
+          child: LatarBelakangGlobal(
+            tampilan: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height,
-                      child: Image.asset(
-                        'aset/gambar/latar_belakang.png',
-                        fit: BoxFit.fitWidth,
+                    Padding(
+                      padding: EdgeInsets.all(5.0,),
+                      child: Material(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(100.0,),
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            dialogOpsi(context, 'Batalkan pengisian data, Anda yakin?', () {
+                              tutupHalaman(context, null);
+                              tutupHalaman(context, null);
+                            }, () {
+                              tutupHalaman(context, null);
+                            });
+                          },
+                          borderRadius: BorderRadius.circular(100.0,),
+                          child: Padding(
+                            padding: EdgeInsets.all(15.0,),
+                            child: Icon(
+                              Icons.arrow_back,
+                              size: 30.0,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                    Expanded(
+                      child: TeksGlobal(
+                        isi: 'Data Penduduk Baru',
+                        ukuran: 18.0,
+                      ),
+                    )
+                  ],
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.all(5.0,),
+                    child: ListView(
                       children: [
+                        SizedBox(
+                          height: 10.0,
+                        ),
+                        InputAngkaTanpaPemisah(
+                          label: 'Nomor yang dapat dihubungi (Diutamakan Whatsapp)',
+                          controller: pengaturNoHp,
+                        ),
+                        SizedBox(
+                          height: 10.0,
+                        ),
+                        TeksGlobal(
+                          isi: '*Mohon untuk mengisi sesuai dengan data yang tertera pada kartu keluarga Anda',
+                          tebal: true,
+                        ),
+                        SizedBox(
+                          height: 10.0,
+                        ),
+                        InputAngkaTanpaPemisah(
+                          label: 'Nomor Kartu Keluarga',
+                          controller: pengaturNoKK,
+                        ),
+                        SizedBox(
+                          height: 10.0,
+                        ),
+                        InputTeksGlobal(
+                          label: 'Alamat',
+                          controller: pengaturAlamat,
+                          kapitalisasi: TextCapitalization.characters,
+                        ),
+                        SizedBox(
+                          height: 10.0,
+                        ),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Padding(
-                              padding: EdgeInsets.all(5.0,),
-                              child: Material(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(100.0,),
-                                ),
-                                child: InkWell(
-                                  onTap: () {
-                                    dialogOpsi(context, 'Batalkan pengisian data, Anda yakin?', () {
-                                      tutupHalaman(context, null);
-                                      tutupHalaman(context, null);
-                                    }, () {
-                                      tutupHalaman(context, null);
-                                    });
-                                  },
-                                  borderRadius: BorderRadius.circular(100.0,),
-                                  child: Padding(
-                                    padding: EdgeInsets.all(15.0,),
-                                    child: Icon(
-                                      Icons.arrow_back,
-                                      size: 30.0,
-                                    ),
-                                  ),
-                                ),
+                            Expanded(
+                              child: InputAngkaTanpaPemisah(
+                                label: 'RT',
+                                controller: pengaturRT,
                               ),
                             ),
+                            SizedBox(
+                              width: 10.0,
+                            ),
                             Expanded(
-                              child: TeksGlobal(
-                                isi: 'Data Penduduk Baru',
-                                ukuran: 18.0,
+                              child: InputAngkaTanpaPemisah(
+                                label: 'RW',
+                                controller: pengaturRW,
                               ),
-                            )
+                            ),
                           ],
                         ),
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.all(5.0,),
-                            child: ListView(
-                              children: [
-                                SizedBox(
-                                  height: 10.0,
-                                ),
-                                TeksGlobal(
-                                  isi: '*Mohon untuk mengisi sesuai dengan data yang tertera pada kartu keluarga Anda',
-                                  tebal: true,
-                                ),
-                                SizedBox(
-                                  height: 10.0,
-                                ),
-                                InputAngkaTanpaPemisah(
-                                  label: 'Nomor Kartu Keluarga',
-                                  controller: pengaturNoKK,
-                                ),
-                                SizedBox(
-                                  height: 10.0,
-                                ),
-                                InputTeksGlobal(
-                                  label: 'Alamat',
-                                  controller: pengaturAlamat,
-                                  kapitalisasi: TextCapitalization.characters,
-                                ),
-                                SizedBox(
-                                  height: 10.0,
-                                ),
-                                Row(
+                        SizedBox(
+                          height: 5.0,
+                        ),
+                        InputAngkaTanpaPemisah(
+                          label: 'Kode Pos',
+                          controller: pengaturKodePos,
+                        ),
+                        SizedBox(
+                          height: 5.0,
+                        ),
+                        InputTeksGlobal(
+                          label: 'Desa/Kelurahan',
+                          controller: pengaturKelurahan,
+                          kapitalisasi: TextCapitalization.characters,
+                        ),
+                        SizedBox(
+                          height: 5.0,
+                        ),
+                        InputTeksGlobal(
+                          label: 'Kecamatan',
+                          controller: pengaturKecamatan,
+                          kapitalisasi: TextCapitalization.characters,
+                        ),
+                        SizedBox(
+                          height: 5.0,
+                        ),
+                        InputOpsi(
+                          label: 'Kabupaten/Kota',
+                          controller: pengaturKabupaten,
+                          daftarOpsi: daftarKota,
+                          fungsiGanti: (hasil) {
+                            setState(() {
+                              pengaturKabupaten.text = hasil;
+                            });
+                          },
+                        ),
+                        SizedBox(
+                          height: 5.0,
+                        ),
+                        InputOpsi(
+                          label: 'Provinsi',
+                          controller: pengaturProvinsi,
+                          daftarOpsi: daftarProvinsi,
+                          fungsiGanti: (hasil) {
+                            setState(() {
+                              pengaturProvinsi.text = hasil;
+                            });
+                          },
+                        ),
+                        SizedBox(
+                          height: 5.0,
+                        ),
+                        Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5.0,),
+                          ),
+                          elevation: 10.0,
+                          child: Material(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0,),
+                            ),
+                            child: InkWell(
+                              onTap: () {
+                                pindahKeHalaman(
+                                  context,
+                                  FormDaftarAnggotaKeluarga(
+                                    dataAnggota: [],
+                                  ), (List panggilKembali) {
+                                    if(panggilKembali != null && panggilKembali.isNotEmpty) {
+                                      setState(() {
+                                        daftarAnggotaKeluarga.add(panggilKembali);
+                                      });
+                                    }
+                                  },
+                                );
+                              },
+                              borderRadius: BorderRadius.circular(5.0,),
+                              child: Padding(
+                                padding: EdgeInsets.all(20.0,),
+                                child: Row(
                                   children: [
                                     Expanded(
-                                      child: InputAngkaTanpaPemisah(
-                                        label: 'RT',
-                                        controller: pengaturRT,
+                                      child: TeksGlobal(
+                                        isi: 'Tambah Anggota Keluarga',
+                                        ukuran: 16.0,
                                       ),
                                     ),
-                                    SizedBox(
-                                      width: 10.0,
-                                    ),
-                                    Expanded(
-                                      child: InputAngkaTanpaPemisah(
-                                        label: 'RW',
-                                        controller: pengaturRW,
-                                      ),
+                                    Icon(
+                                      Icons.add,
+                                      size: 30.0,
                                     ),
                                   ],
                                 ),
-                                SizedBox(
-                                  height: 5.0,
-                                ),
-                                InputAngkaTanpaPemisah(
-                                  label: 'Kode Pos',
-                                  controller: pengaturKodePos,
-                                ),
-                                SizedBox(
-                                  height: 5.0,
-                                ),
-                                InputTeksGlobal(
-                                  label: 'Desa/Kelurahan',
-                                  controller: pengaturKelurahan,
-                                  kapitalisasi: TextCapitalization.characters,
-                                ),
-                                SizedBox(
-                                  height: 5.0,
-                                ),
-                                InputTeksGlobal(
-                                  label: 'Kecamatan',
-                                  controller: pengaturKecamatan,
-                                  kapitalisasi: TextCapitalization.characters,
-                                ),
-                                SizedBox(
-                                  height: 5.0,
-                                ),
-                                InputOpsi(
-                                  label: 'Kabupaten/Kota',
-                                  controller: pengaturKabupaten,
-                                  daftarOpsi: daftarKota,
-                                  fungsiGanti: (hasil) {
-                                    setState(() {
-                                      pengaturKabupaten.text = hasil;
-                                    });
-                                  },
-                                ),
-                                SizedBox(
-                                  height: 5.0,
-                                ),
-                                InputOpsi(
-                                  label: 'Provinsi',
-                                  controller: pengaturProvinsi,
-                                  daftarOpsi: daftarProvinsi,
-                                  fungsiGanti: (hasil) {
-                                    setState(() {
-                                      pengaturProvinsi.text = hasil;
-                                    });
-                                  },
-                                ),
-                                SizedBox(
-                                  height: 5.0,
-                                ),
-                                ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  itemCount: daftarAnggotaKeluarga.length,
-                                  itemBuilder: (BuildContext daftarAnggota, int indeks) {
-                                    return Padding(
-                                      padding: EdgeInsets.symmetric(vertical: 5.0,),
-                                      child: KartuAnggotaKeluarga(
-                                        noUrut: indeks,
-                                        dataAnggota: indeks == 0 ? [] : daftarAnggotaKeluarga[indeks],
-                                        panggilKembali: (List dataAnggota) {
-                                          if(dataAnggota != null && dataAnggota.isNotEmpty) {
-                                            if(indeks == 0) {
-                                              setState(() {
-                                                daftarAnggotaKeluarga.add(dataAnggota);
-                                              });
-                                            } else {
-                                              setState(() {
-                                                daftarAnggotaKeluarga[indeks] = dataAnggota;
-                                              });
-                                            }
-                                          }
-                                        },
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
+                              ),
                             ),
                           ),
                         ),
-                        !memuat ?
-                        Padding(
-                          padding: EdgeInsets.all(5.0,),
-                          child: TombolGlobal(
-                            judul: 'Simpan',
-                            fungsiTekan: () {
-                              setState(() {
-                                memuat = true;
-                              });
-
-                              Future.delayed(Duration(seconds: 3), () {
-                                tutupHalaman(context, null);
-                              });
-                            },
-                          ),
-                        ) :
-                        IndikatorProgressGlobal(),
+                        SizedBox(
+                          height: 5.0,
+                        ),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: daftarAnggotaKeluarga.length,
+                          itemBuilder: (BuildContext daftarAnggota, int indeks) {
+                            return Padding(
+                              padding: EdgeInsets.symmetric(vertical: 5.0,),
+                              child: KartuAnggotaKeluarga(
+                                dataAnggota: daftarAnggotaKeluarga[indeks],
+                                panggilKembali: (List dataAnggota) {
+                                  if(dataAnggota != null && dataAnggota.isNotEmpty) {
+                                    setState(() {
+                                      daftarAnggotaKeluarga[indeks] = dataAnggota;
+                                    });
+                                  }
+                                },
+                              ),
+                            );
+                          },
+                        ),
                       ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+                !memuat ?
+                Padding(
+                  padding: EdgeInsets.all(5.0,),
+                  child: TombolGlobal(
+                    judul: 'Simpan',
+                    fungsiTekan: () {
+                      if(pengaturNoKK.text != ''
+                          && pengaturAlamat.text != ''
+                          && pengaturRT.text != ''
+                          && pengaturRW.text != ''
+                          && pengaturKodePos.text != ''
+                          && pengaturKelurahan.text != ''
+                          && pengaturKecamatan.text != ''
+                          && pengaturKabupaten.text != ''
+                          && pengaturProvinsi.text != ''
+                          && daftarAnggotaKeluarga.isNotEmpty) {
+                        dialogOpsi(context, 'Simpan data penduduk, Anda yakin?', () async {
+                          tutupHalaman(context, null);
+
+                          setState(() {
+                            memuat = true;
+                          });
+
+                          if(idDokumen == null) {
+                            await simpanKartuKeluarga(pengaturNoHp.text, [
+                              pengaturNoKK.text,
+                              pengaturAlamat.text,
+                              pengaturRT.text,
+                              pengaturRW.text,
+                              pengaturKodePos.text,
+                              pengaturKelurahan.text,
+                              pengaturKecamatan.text,
+                              pengaturKabupaten.text,
+                              pengaturProvinsi.text
+                            ], daftarAnggotaKeluarga, () {
+                              tutupHalaman(context, null);
+                            }, () {
+                              setState(() {
+                                memuat = false;
+                              });
+
+                              dialogOK(context, 'Terjadi kesalahan, gagal menyimpan data, silahkan coba lagi', () {
+                                tutupHalaman(context, null);
+                              }, () {
+
+                              });
+                            });
+                          } else {
+
+                          }
+                        }, () {
+                          tutupHalaman(context, null);
+                        });
+                      } else {
+                        dialogOK(context, 'Harap untuk mengisi seluruh data sebelum menyimpan', () {
+                          tutupHalaman(context, null);
+                        }, () {
+
+                        });
+                      }
+                    },
+                  ),
+                ) :
+                IndikatorProgressGlobal(),
+              ],
+            ),
           ),
         ),
       ),
@@ -814,68 +772,21 @@ class _FormDaftarAnggotaKeluargaState extends State<FormDaftarAnggotaKeluarga> {
 /// Widget tanpa keadaan (stateless widget)
 
 class KartuAnggotaKeluarga extends StatelessWidget {
-  final int noUrut;
   final List dataAnggota;
   final Function panggilKembali;
 
   KartuAnggotaKeluarga({
-    @required this.noUrut,
     @required this.dataAnggota,
     @required this.panggilKembali,
   });
 
   @override
   Widget build(BuildContext context) {
-    return noUrut == 0 ?
-    Container(
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.black,
-        ),
+    return Card(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(5.0,),
       ),
-      child: Material(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(5.0,),
-        ),
-        child: InkWell(
-          onTap: () {
-            pindahKeHalaman(
-              context,
-              FormDaftarAnggotaKeluarga(
-                dataAnggota: dataAnggota,
-              ),
-              panggilKembali,
-            );
-          },
-          borderRadius: BorderRadius.circular(5.0,),
-          child: Padding(
-            padding: EdgeInsets.all(20.0,),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TeksGlobal(
-                    isi: 'Tambah Anggota Keluarga',
-                    ukuran: 16.0,
-                  ),
-                ),
-                Icon(
-                  Icons.add,
-                  size: 30.0,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    ) :
-    Container(
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.black,
-        ),
-        borderRadius: BorderRadius.circular(5.0,),
-      ),
+      elevation: 10.0,
       child: Material(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5.0,),
@@ -912,8 +823,8 @@ class KartuAnggotaKeluarga extends StatelessWidget {
                   ),
                 ),
                 Icon(
-                  Icons.add,
-                  size: 30.0,
+                  Icons.edit,
+                  size: 25.0,
                 ),
               ],
             ),

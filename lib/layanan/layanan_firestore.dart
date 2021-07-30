@@ -1,5 +1,6 @@
 import 'package:aplikasi_data_warga/fungsi/fungsi_global.dart';
 import 'package:aplikasi_data_warga/widget/widget_global.dart';
+import 'package:aplikasi_data_warga/widget/widget_spesifik/widget_halaman_manajemen_penduduk.dart';
 import 'package:aplikasi_data_warga/widget/widget_spesifik/widget_halaman_manajemen_pengguna.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -237,7 +238,7 @@ Future<void> simpanKartuKeluarga(String nomorHp, List headerKK, List anggotaKelu
 
   return kartuKeluarga.add({
     'no_hp': nomorHp,
-    'nomorKK': headerKK[0],
+    'no_kk': headerKK[0],
     'alamat': headerKK[1],
     'rt': headerKK[2],
     'rw': headerKK[3],
@@ -287,7 +288,7 @@ Future<void> ubahKartuKeluarga(String idDokumen, String nomorHp, List headerKK, 
 
   return kartuKeluarga.doc(idDokumen).set({
     'no_hp': nomorHp,
-    'nomorKK': headerKK[0],
+    'no_kk': headerKK[0],
     'alamat': headerKK[1],
     'rt': headerKK[2],
     'rw': headerKK[3],
@@ -329,4 +330,170 @@ Future<void> ubahKartuKeluarga(String idDokumen, String nomorHp, List headerKK, 
   }).catchError((error) {
     fungsiGagal();
   });
+}
+
+Future<void> hapusKartuKeluarga(String idDokumen, Function fungsiBerhasil, Function fungsiGagal) async {
+  CollectionReference kartuKeluarga = FirebaseFirestore.instance.collection('data_penduduk');
+  CollectionReference anggota = kartuKeluarga.doc(idDokumen).collection('anggota_keluarga');
+
+  return await anggota.get().then((snapshot) async {
+    for(DocumentSnapshot doc in snapshot.docs) {
+      doc.reference.delete();
+    }
+
+    await kartuKeluarga.doc(idDokumen).delete().then((value) {
+      fungsiBerhasil();
+    }).catchError((error) {
+      fungsiGagal();
+    });
+  });
+}
+
+/// Widget streambuilder untuk membaca data berdasarkan waktu nyata (Real time)
+
+class LihatDaftarKK extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final Stream<QuerySnapshot> _kartuKeluargaStream = FirebaseFirestore.instance.collection('data_penduduk').snapshots();
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: _kartuKeluargaStream,
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.signal_wifi_off,
+                size: 40.0,
+              ),
+              SizedBox(
+                height: 30.0,
+              ),
+              TeksGlobal(
+                isi: 'Gagal terhubung ke server',
+                ukuran: 20.0,
+                tebal: true,
+                posisi: TextAlign.center,
+              ),
+            ],
+          );
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: Center(
+                  child: TeksGlobal(
+                    isi: 'Sedang memuat...',
+                    ukuran: 16.0,
+                    tebal: true,
+                    posisi: TextAlign.center,
+                  ),
+                ),
+              ),
+              IndikatorProgressGlobal(),
+            ],
+          );
+        }
+
+        return snapshot.data.docs.length != 0 ?
+        ListView(
+          children: snapshot.data.docs.map((DocumentSnapshot document) {
+            Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+
+            List dataAnggota = [];
+
+            FirebaseFirestore.instance.collection('data_penduduk').doc(document.id).collection('anggota_keluarga').get().then((querySnapshot) {
+              dataAnggota = querySnapshot.docs.map((doc) => doc.data()).toList();
+            });
+
+            return Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0,),
+              child: Card(
+                elevation: 10.0,
+                child: Padding(
+                  padding: EdgeInsets.all(10.0,),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TeksGlobal(
+                          isi: data['no_kk'],
+                          ukuran: 18.0,
+                          tebal: true,
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          pindahKeHalaman(context, FormKartuKeluarga(
+                            dataKK: [
+                              document.id,
+                              data,
+                              dataAnggota,
+                            ],
+                          ), (panggilKembali) {
+
+                          });
+                        },
+                        borderRadius: BorderRadius.circular(100.0,),
+                        child: Padding(
+                          padding: EdgeInsets.all(10.0,),
+                          child: Icon(
+                            Icons.edit,
+                            size: 25.0,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 5.0,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          dialogOpsi(context, 'Hapus data pengguna, Anda yakin?', () async {
+                            tutupHalaman(context, null);
+
+                            await hapusKartuKeluarga(document.id, () {
+
+                            }, () {
+                              dialogOK(context, 'Terjadi kesalahan saat menghapus data, silahkan coba lagi', () {
+                                tutupHalaman(context, null);
+                              }, () {
+
+                              });
+                            });
+                          }, () {
+                            tutupHalaman(context, null);
+                          });
+                        },
+                        borderRadius: BorderRadius.circular(100.0,),
+                        child: Padding(
+                          padding: EdgeInsets.all(10.0,),
+                          child: Icon(
+                            Icons.delete,
+                            color: Colors.red,
+                            size: 25.0,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ) :
+        Center(
+          child: TeksGlobal(
+            isi: 'Tidak ada data tersimpan...',
+            ukuran: 16.0,
+            tebal: true,
+            posisi: TextAlign.center,
+          ),
+        );
+      },
+    );
+  }
 }
