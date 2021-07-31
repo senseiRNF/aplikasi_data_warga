@@ -140,7 +140,7 @@ Future<List> muatDaftarKartuKeluarga(List dataBerkas, Function fungsiUbah) async
   return hasil;
 }
 
-Future<List> muatDaftarAnggotaKeluarga(String idDokumen, String noKK) async {
+Future<List> muatDaftarAnggotaKeluarga(String idDokumen) async {
   List hasil = [];
 
   await firestore.collection('data_penduduk').doc(idDokumen).collection('anggota_keluarga').get().then((querySnapshot) {
@@ -152,8 +152,48 @@ Future<List> muatDaftarAnggotaKeluarga(String idDokumen, String noKK) async {
         dataAnggota[i]['nama'],
       ]);
     }
+  }).catchError((onError) {
+    print('[$onError]');
+  });
 
-    print('DAFTAR ANGGOTA KELUARGA: $dataAnggota');
+  return hasil;
+}
+
+Future<List> muatDataAyahIbu(String idDokumen) async {
+  List hasil = [];
+
+  await firestore.collection('data_penduduk').doc(idDokumen).collection('anggota_keluarga').get().then((querySnapshot) {
+    List dataAnggota = querySnapshot.docs.map((doc) => doc.data()).toList();
+
+    for(int i = 0; i < dataAnggota.length; i++) {
+      if(dataAnggota[i]['status_dalam_keluarga'] == 'KEPALA KELUARGA' || dataAnggota[i]['status_dalam_keluarga'] == 'SUAMI' || dataAnggota[i]['status_dalam_keluarga'] == 'ISTRI') {
+        hasil.add([
+          dataAnggota[i]['nama'],
+          dataAnggota[i]['nik'],
+          dataAnggota[i]['tanggal_lahir'],
+          dataAnggota[i]['jenis_kelamin'],
+          dataAnggota[i]['status_dalam_keluarga'],
+        ]);
+      }
+    }
+  }).catchError((onError) {
+    print('[$onError]');
+  });
+
+  return hasil;
+}
+
+Future<String> muatAlamat(String noKK) async {
+  String hasil;
+
+  await firestore.collection('data_penduduk').get().then((querySnapshot) {
+    List noKartuKeluarga = querySnapshot.docs.map((doc) => doc.data()).toList();
+
+    for(int i = 0; i < noKartuKeluarga.length; i++) {
+      if(noKartuKeluarga[i]['no_kk'] == noKK) {
+        hasil = noKartuKeluarga[i]['alamat'];
+      }
+    }
   }).catchError((onError) {
     print('[$onError]');
   });

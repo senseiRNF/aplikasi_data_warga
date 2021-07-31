@@ -130,7 +130,7 @@ class _FormUserSistemState extends State<FormUserSistem> {
                   judul: 'Simpan',
                   fungsiTekan: () {
                     if(pengaturNama.text != '' && pengaturEmail.text != '' && pengaturJabatan.text != '') {
-                      dialogOpsi(context, 'Tambahkan pengguna baru, Anda yakin?', () async {
+                      dialogOpsi(context, 'Simpan data pengguna, Anda yakin?', () async {
                         tutupHalaman(context, null);
 
                         setState(() {

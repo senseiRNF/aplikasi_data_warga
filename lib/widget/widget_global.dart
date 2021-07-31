@@ -554,6 +554,111 @@ class LatarBelakangGlobal extends StatelessWidget {
     );
   }
 }
+
+class InputNonAktif extends StatelessWidget {
+  final String label;
+  final TextEditingController controller;
+
+  InputNonAktif({
+    @required this.label,
+    @required this.controller,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(
+          color: Colors.black,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(5.0,),
+          borderSide: BorderSide(
+            color: Colors.black,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(5.0,),
+          borderSide: BorderSide(
+            color: Colors.black,
+          ),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(5.0,),
+          borderSide: BorderSide(
+            color: Colors.black,
+          ),
+        ),
+      ),
+      controller: controller,
+      enabled: false,
+    );
+  }
+}
+
+class InputJam extends StatelessWidget {
+  final String label;
+  final TextEditingController controller;
+  final Function fungsiGanti;
+
+  InputJam({
+    @required this.label,
+    @required this.controller,
+    @required this.fungsiGanti,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        showTimePicker(
+          context: context,
+          initialTime: TimeOfDay.now(),
+          builder: (BuildContext context, Widget child) {
+            return MediaQuery(
+              data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+              child: child,
+            );
+          },
+        ).then((hasil) {
+          if(hasil != null) {
+            fungsiGanti(hasil);
+          }
+        });
+      },
+      borderRadius: BorderRadius.circular(5.0,),
+      child: TextField(
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(
+            color: Colors.black,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(5.0,),
+            borderSide: BorderSide(
+              color: Colors.black,
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(5.0,),
+            borderSide: BorderSide(
+              color: Colors.black,
+            ),
+          ),
+          disabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(5.0,),
+            borderSide: BorderSide(
+              color: Colors.black,
+            ),
+          ),
+        ),
+        controller: controller,
+        enabled: false,
+      ),
+    );
+  }
+}
 /// Widget dengan keadaan (stateful Widget)
 
 class InputKataSandiGlobal extends StatefulWidget {

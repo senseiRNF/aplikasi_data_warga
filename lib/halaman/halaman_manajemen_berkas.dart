@@ -188,7 +188,11 @@ class _HalamanManajemenKelahiranState extends State<HalamanManajemenKelahiran> {
                   ),
                   child: InkWell(
                     onTap: () {
+                      pindahKeHalaman(context, FormKeteranganKelahiran(
+                        dataKeterangan: [],
+                      ), (panggilKembali) {
 
+                      });
                     },
                     borderRadius: BorderRadius.circular(5.0,),
                     child: Card(
@@ -221,7 +225,7 @@ class _HalamanManajemenKelahiranState extends State<HalamanManajemenKelahiran> {
                 height: 10.0,
               ),
               Expanded(
-                child: Material(),
+                child: LihatDaftarDataKelahiran(),
               ),
             ],
           ),
