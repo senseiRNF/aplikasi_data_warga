@@ -19,7 +19,6 @@ class FormKartuKeluarga extends StatefulWidget {
 }
 
 class _FormKartuKeluargaState extends State<FormKartuKeluarga> {
-  TextEditingController pengaturNoHp = new TextEditingController();
   TextEditingController pengaturNoKK = new TextEditingController();
   TextEditingController pengaturAlamat = new TextEditingController();
   TextEditingController pengaturRT = new TextEditingController();
@@ -43,7 +42,6 @@ class _FormKartuKeluargaState extends State<FormKartuKeluarga> {
     if(widget.dataKK.isNotEmpty) {
       setState(() {
         idDokumen = widget.dataKK[0];
-        pengaturNoHp.text = widget.dataKK[1]['no_hp'];
         pengaturNoKK.text = widget.dataKK[1]['no_kk'];
         pengaturAlamat.text = widget.dataKK[1]['alamat'];
         pengaturRT.text = widget.dataKK[1]['rt'];
@@ -125,13 +123,6 @@ class _FormKartuKeluargaState extends State<FormKartuKeluarga> {
                     padding: EdgeInsets.all(5.0,),
                     child: ListView(
                       children: [
-                        SizedBox(
-                          height: 10.0,
-                        ),
-                        InputAngkaTanpaPemisah(
-                          label: 'Nomor yang dapat dihubungi (Diutamakan Whatsapp)',
-                          controller: pengaturNoHp,
-                        ),
                         SizedBox(
                           height: 10.0,
                         ),
@@ -285,6 +276,11 @@ class _FormKartuKeluargaState extends State<FormKartuKeluarga> {
                               padding: EdgeInsets.symmetric(vertical: 5.0,),
                               child: KartuAnggotaKeluarga(
                                 dataAnggota: daftarAnggotaKeluarga[indeks],
+                                hapusAnggota: () {
+                                  setState(() {
+                                    daftarAnggotaKeluarga.removeAt(indeks);
+                                  });
+                                },
                                 panggilKembali: (List dataAnggota) {
                                   if(dataAnggota != null && dataAnggota.isNotEmpty) {
                                     setState(() {
@@ -324,7 +320,7 @@ class _FormKartuKeluargaState extends State<FormKartuKeluarga> {
                           });
 
                           if(idDokumen == null) {
-                            await simpanKartuKeluarga(pengaturNoHp.text, [
+                            await simpanPenduduk([
                               pengaturNoKK.text,
                               pengaturAlamat.text,
                               pengaturRT.text,
@@ -334,21 +330,23 @@ class _FormKartuKeluargaState extends State<FormKartuKeluarga> {
                               pengaturKecamatan.text,
                               pengaturKabupaten.text,
                               pengaturProvinsi.text
-                            ], daftarAnggotaKeluarga, () {
-                              tutupHalaman(context, null);
-                            }, () {
-                              setState(() {
-                                memuat = false;
-                              });
-
-                              dialogOK(context, 'Terjadi kesalahan, gagal menyimpan data, silahkan coba lagi', () {
+                            ], daftarAnggotaKeluarga).then((hasil) {
+                              if(hasil != null && hasil) {
                                 tutupHalaman(context, null);
-                              }, () {
+                              } else {
+                                setState(() {
+                                  memuat = false;
+                                });
 
-                              });
+                                dialogOK(context, 'Terjadi kesalahan, gagal menyimpan data, silahkan coba lagi', () {
+                                  tutupHalaman(context, null);
+                                }, () {
+
+                                });
+                              }
                             });
                           } else {
-                            await ubahKartuKeluarga(idDokumen, pengaturNoHp.text, [
+                            await ubahPenduduk(idDokumen, [
                               pengaturNoKK.text,
                               pengaturAlamat.text,
                               pengaturRT.text,
@@ -358,18 +356,20 @@ class _FormKartuKeluargaState extends State<FormKartuKeluarga> {
                               pengaturKecamatan.text,
                               pengaturKabupaten.text,
                               pengaturProvinsi.text,
-                            ], daftarAnggotaKeluarga, () {
-                              tutupHalaman(context, null);
-                            }, () {
-                              setState(() {
-                                memuat = false;
-                              });
-
-                              dialogOK(context, 'Terjadi kesalahan, gagal menyimpan data, silahkan coba lagi', () {
+                            ], daftarAnggotaKeluarga).then((hasil) {
+                              if(hasil != null && hasil) {
                                 tutupHalaman(context, null);
-                              }, () {
+                              } else {
+                                setState(() {
+                                  memuat = false;
+                                });
 
-                              });
+                                dialogOK(context, 'Terjadi kesalahan, gagal menyimpan data, silahkan coba lagi', () {
+                                  tutupHalaman(context, null);
+                                }, () {
+
+                                });
+                              }
                             });
                           }
                         }, () {
@@ -418,7 +418,7 @@ class _FormDaftarAnggotaKeluargaState extends State<FormDaftarAnggotaKeluarga> {
   TextEditingController pengaturNIK = new TextEditingController();
   TextEditingController pengaturJenisKelamin = new TextEditingController();
   TextEditingController pengaturTempatLahir = new TextEditingController();
-  TextEditingController pengaturTangalLahir = new TextEditingController();
+  TextEditingController pengaturTanggalLahir = new TextEditingController();
   TextEditingController pengaturAgama = new TextEditingController();
   TextEditingController pengaturPendidikan = new TextEditingController();
   TextEditingController pengaturProfesi = new TextEditingController();
@@ -430,7 +430,7 @@ class _FormDaftarAnggotaKeluargaState extends State<FormDaftarAnggotaKeluarga> {
   TextEditingController pengaturNamaAyah = new TextEditingController();
   TextEditingController pengaturNamaIbu = new TextEditingController();
 
-  DateTime tangalLahir;
+  DateTime tanggalLahir;
 
   @override
   void initState() {
@@ -442,8 +442,8 @@ class _FormDaftarAnggotaKeluargaState extends State<FormDaftarAnggotaKeluarga> {
         pengaturNIK.text = widget.dataAnggota[1];
         pengaturJenisKelamin.text = widget.dataAnggota[2];
         pengaturTempatLahir.text = widget.dataAnggota[3];
-        tangalLahir = DateTime.parse(widget.dataAnggota[4]);
-        pengaturTangalLahir.text = DateFormat('dd-MM-yyyy').format(DateTime.parse(widget.dataAnggota[4]));
+        tanggalLahir = DateTime.parse(widget.dataAnggota[4]);
+        pengaturTanggalLahir.text = DateFormat('dd-MM-yyyy').format(DateTime.parse(widget.dataAnggota[4]));
         pengaturAgama.text = widget.dataAnggota[5];
         pengaturPendidikan.text = widget.dataAnggota[6];
         pengaturProfesi.text = widget.dataAnggota[7];
@@ -572,12 +572,13 @@ class _FormDaftarAnggotaKeluargaState extends State<FormDaftarAnggotaKeluarga> {
                                     height: 10.0,
                                   ),
                                   InputTanggal(
-                                    controller: pengaturTangalLahir,
-                                    tanggalLahir: tangalLahir,
+                                    label: 'Tanggal Lahir',
+                                    controller: pengaturTanggalLahir,
+                                    tanggal: tanggalLahir,
                                     fungsiGanti: (hasil) {
                                       setState(() {
-                                        tangalLahir = hasil;
-                                        pengaturTangalLahir.text = DateFormat('dd-MM-yyyy').format(hasil);
+                                        tanggalLahir = hasil;
+                                        pengaturTanggalLahir.text = DateFormat('dd-MM-yyyy').format(hasil);
                                       });
                                     },
                                   ),
@@ -716,11 +717,11 @@ class _FormDaftarAnggotaKeluargaState extends State<FormDaftarAnggotaKeluarga> {
                                 && pengaturNIK.text != ''
                                 && pengaturJenisKelamin.text != ''
                                 && pengaturTempatLahir.text != ''
-                                && pengaturTangalLahir.text != ''
+                                && pengaturTanggalLahir.text != ''
                                 && pengaturAgama.text != ''
                                 && pengaturPendidikan.text != ''
                                 && pengaturProfesi.text != ''
-                                && pengaturStatusPerkawinan.text != null
+                                && pengaturStatusPerkawinan.text != ''
                                 && pengaturStatusDalamKeluarga.text != ''
                                 && pengaturKewarganegaraan.text != ''
                                 && pengaturNamaAyah.text != ''
@@ -731,7 +732,7 @@ class _FormDaftarAnggotaKeluargaState extends State<FormDaftarAnggotaKeluarga> {
                                   pengaturNIK.text,
                                   pengaturJenisKelamin.text,
                                   pengaturTempatLahir.text,
-                                  DateFormat('yyyy-MM-dd').format(tangalLahir),
+                                  DateFormat('yyyy-MM-dd').format(tanggalLahir),
                                   pengaturAgama.text,
                                   pengaturPendidikan.text,
                                   pengaturProfesi.text,
@@ -749,7 +750,7 @@ class _FormDaftarAnggotaKeluargaState extends State<FormDaftarAnggotaKeluarga> {
                                   pengaturNIK.text,
                                   pengaturJenisKelamin.text,
                                   pengaturTempatLahir.text,
-                                  DateFormat('yyyy-MM-dd').format(tangalLahir),
+                                  DateFormat('yyyy-MM-dd').format(tanggalLahir),
                                   pengaturAgama.text,
                                   pengaturPendidikan.text,
                                   pengaturProfesi.text,
@@ -787,10 +788,12 @@ class _FormDaftarAnggotaKeluargaState extends State<FormDaftarAnggotaKeluarga> {
 
 class KartuAnggotaKeluarga extends StatelessWidget {
   final List dataAnggota;
+  final Function hapusAnggota;
   final Function panggilKembali;
 
   KartuAnggotaKeluarga({
     @required this.dataAnggota,
+    @required this.hapusAnggota,
     @required this.panggilKembali,
   });
 
@@ -801,48 +804,63 @@ class KartuAnggotaKeluarga extends StatelessWidget {
         borderRadius: BorderRadius.circular(5.0,),
       ),
       elevation: 10.0,
-      child: Material(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(5.0,),
-        ),
-        child: InkWell(
-          onTap: () {
-            pindahKeHalaman(
-              context,
-              FormDaftarAnggotaKeluarga(
-                dataAnggota: dataAnggota,
-              ),
-              panggilKembali,
-            );
-          },
-          borderRadius: BorderRadius.circular(5.0,),
-          child: Padding(
-            padding: EdgeInsets.all(20.0,),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      TeksGlobal(
-                        isi: dataAnggota[0],
-                        ukuran: 16.0,
-                        tebal: true,
-                        posisi: TextAlign.center,
-                      ),
-                      TeksGlobal(
-                        isi: dataAnggota[9],
-                        ukuran: 14.0,
-                      )
-                    ],
+      child: Padding(
+        padding: EdgeInsets.all(20.0,),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                children: [
+                  TeksGlobal(
+                    isi: dataAnggota[0],
+                    ukuran: 16.0,
+                    tebal: true,
+                    posisi: TextAlign.center,
                   ),
-                ),
-                Icon(
+                  TeksGlobal(
+                    isi: dataAnggota[9],
+                    ukuran: 14.0,
+                  )
+                ],
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                pindahKeHalaman(
+                  context,
+                  FormDaftarAnggotaKeluarga(
+                    dataAnggota: dataAnggota,
+                  ),
+                  panggilKembali,
+                );
+              },
+              borderRadius: BorderRadius.circular(100.0,),
+              child: Padding(
+                padding: EdgeInsets.all(10.0,),
+                child: Icon(
                   Icons.edit,
                   size: 25.0,
                 ),
-              ],
+              ),
             ),
-          ),
+            SizedBox(
+              width: 5.0,
+            ),
+            InkWell(
+              onTap: () {
+                hapusAnggota();
+              },
+              borderRadius: BorderRadius.circular(100.0,),
+              child: Padding(
+                padding: EdgeInsets.all(10.0,),
+                child: Icon(
+                  Icons.delete,
+                  color: Colors.red,
+                  size: 25.0,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

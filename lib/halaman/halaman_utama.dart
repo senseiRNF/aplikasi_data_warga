@@ -1,10 +1,12 @@
 import 'package:aplikasi_data_warga/fungsi/fungsi_global.dart';
 import 'package:aplikasi_data_warga/fungsi/fungsi_spesifik/fungsi_halaman_utama.dart';
+import 'package:aplikasi_data_warga/halaman/halaman_manajemen_berkas.dart';
 import 'package:aplikasi_data_warga/halaman/halaman_manajemen_penduduk.dart';
 import 'package:aplikasi_data_warga/halaman/halaman_manajemen_pengguna.dart';
 import 'package:aplikasi_data_warga/halaman/halaman_pembuka.dart';
 import 'package:aplikasi_data_warga/layanan/layanan_google_sign_in.dart';
 import 'package:aplikasi_data_warga/layanan/preferensi_global.dart';
+import 'package:aplikasi_data_warga/layanan/variable_global.dart';
 import 'package:aplikasi_data_warga/widget/widget_global.dart';
 import 'package:flutter/material.dart';
 
@@ -99,7 +101,32 @@ class _HalamanUtamaState extends State<HalamanUtama> {
               padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0,),
               child: TombolMenuBerlatar(
                 fungsiTombol: () {
+                  dialogDaftarOpsi(context, daftarBerkas, (hasil) {
+                    switch(hasil) {
+                      case 'Keterangan Pendaftaran KTP':
+                        pindahKeHalaman(context, HalamanManajemenDaftarKTP(), (panggilKembali) {
 
+                        });
+                        break;
+                      case 'Keterangan Kelahiran':
+                        pindahKeHalaman(context, HalamanManajemenKelahiran(), (panggilKembali) {
+
+                        });
+                        break;
+                      case 'Keterangan Kematian':
+                        pindahKeHalaman(context, HalamanManajemenKematian(), (panggilKembali) {
+
+                        });
+                        break;
+                      case 'Keterangan Pindah Domisili':
+                        pindahKeHalaman(context, HalamanManajemenPindahDomisili(), (panggilKembali) {
+
+                        });
+                        break;
+                      default:
+                        break;
+                    }
+                  });
                 },
                 judul: 'Manajemen Berkas Desa',
                 gambar: 'aset/gambar/gambar_tombol_3.png',
@@ -128,7 +155,32 @@ class _HalamanUtamaState extends State<HalamanUtama> {
               padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0,),
               child: TombolMenuBerlatar(
                 fungsiTombol: () {
+                  dialogDaftarOpsi(context, daftarBerkas, (hasil) {
+                    switch(hasil) {
+                      case 'Keterangan Pendaftaran KTP':
+                        pindahKeHalaman(context, HalamanManajemenDaftarKTP(), (panggilKembali) {
 
+                        });
+                        break;
+                      case 'Keterangan Kelahiran':
+                        pindahKeHalaman(context, HalamanManajemenKelahiran(), (panggilKembali) {
+
+                        });
+                        break;
+                      case 'Keterangan Kematian':
+                        pindahKeHalaman(context, HalamanManajemenKematian(), (panggilKembali) {
+
+                        });
+                        break;
+                      case 'Keterangan Pindah Domisili':
+                        pindahKeHalaman(context, HalamanManajemenPindahDomisili(), (panggilKembali) {
+
+                        });
+                        break;
+                      default:
+                        break;
+                    }
+                  });
                 },
                 judul: 'Manajemen Berkas Desa',
                 gambar: 'aset/gambar/gambar_tombol_3.png',

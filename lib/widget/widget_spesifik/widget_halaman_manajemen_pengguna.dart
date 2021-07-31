@@ -138,32 +138,36 @@ class _FormUserSistemState extends State<FormUserSistem> {
                         });
 
                         if(idDokumen == null) {
-                          await simpanUser(pengaturEmail.text, pengaturNama.text, pengaturJabatan.text, () {
-                            tutupHalaman(context, null);
-                          }, () {
-                            setState(() {
-                              memuat = false;
-                            });
-
-                            dialogOK(context, 'Terjadi kesalahan, gagal menyimpan data, silahkan coba lagi', () {
+                          await simpanUser(pengaturEmail.text, pengaturNama.text, pengaturJabatan.text).then((hasil) {
+                            if(hasil != null && hasil) {
                               tutupHalaman(context, null);
-                            }, () {
+                            } else {
+                              setState(() {
+                                memuat = false;
+                              });
 
-                            });
+                              dialogOK(context, 'Terjadi kesalahan, gagal menyimpan data, silahkan coba lagi', () {
+                                tutupHalaman(context, null);
+                              }, () {
+
+                              });
+                            }
                           });
                         } else {
-                          await ubahUser(idDokumen, pengaturEmail.text, pengaturNama.text, pengaturJabatan.text, () {
-                            tutupHalaman(context, null);
-                          }, () {
-                            setState(() {
-                              memuat = false;
-                            });
-
-                            dialogOK(context, 'Terjadi kesalahan, gagal menyimpan data, silahkan coba lagi', () {
+                          await ubahUser(idDokumen, pengaturEmail.text, pengaturNama.text, pengaturJabatan.text).then((hasil) {
+                            if(hasil != null && hasil) {
                               tutupHalaman(context, null);
-                            }, () {
+                            } else {
+                              setState(() {
+                                memuat = false;
+                              });
 
-                            });
+                              dialogOK(context, 'Terjadi kesalahan, gagal menyimpan data, silahkan coba lagi', () {
+                                tutupHalaman(context, null);
+                              }, () {
+
+                              });
+                            }
                           });
                         }
                       }, () {

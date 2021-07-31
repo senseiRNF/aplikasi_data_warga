@@ -317,7 +317,7 @@ class InputOpsi extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        dialogDaftarOpsi(context, label, daftarOpsi, (hasil) {
+        dialogDaftarOpsi(context, daftarOpsi, (hasil) {
           fungsiGanti(hasil);
         });
       },
@@ -401,13 +401,15 @@ class InputAngkaTanpaPemisah extends StatelessWidget {
 }
 
 class InputTanggal extends StatelessWidget {
+  final String label;
   final TextEditingController controller;
-  final DateTime tanggalLahir;
+  final DateTime tanggal;
   final Function fungsiGanti;
 
   InputTanggal({
+    @required this.label,
     @required this.controller,
-    @required this.tanggalLahir,
+    @required this.tanggal,
     @required this.fungsiGanti,
   });
 
@@ -417,7 +419,7 @@ class InputTanggal extends StatelessWidget {
       onTap: () {
         showDatePicker(
           context: context,
-          initialDate: tanggalLahir != null ? tanggalLahir : DateTime.now(),
+          initialDate: tanggal != null ? tanggal : DateTime.now(),
           firstDate: DateTime(1900),
           lastDate: DateTime.now(),
         ).then((hasil) {
@@ -429,7 +431,7 @@ class InputTanggal extends StatelessWidget {
       borderRadius: BorderRadius.circular(5.0,),
       child: TextField(
         decoration: InputDecoration(
-          labelText: 'Tanggal Lahir',
+          labelText: label,
           labelStyle: TextStyle(
             color: Colors.black,
           ),

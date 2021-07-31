@@ -1,5 +1,6 @@
 import 'package:aplikasi_data_warga/fungsi/fungsi_global.dart';
 import 'package:aplikasi_data_warga/widget/widget_global.dart';
+import 'package:aplikasi_data_warga/widget/widget_spesifik/widget_halaman_manajemen_berkas.dart';
 import 'package:aplikasi_data_warga/widget/widget_spesifik/widget_halaman_manajemen_penduduk.dart';
 import 'package:aplikasi_data_warga/widget/widget_spesifik/widget_halaman_manajemen_pengguna.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,72 +9,64 @@ import 'package:intl/intl.dart';
 
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-/// Layanan Admin
-Future<List> loginSistem(String email) async {
-  List hasil = [];
+/// Layanan Pengguna
+Future<bool> simpanUser(String email, String nama, String jabatan) async {
+  bool hasil;
 
-  await firestore.collection('user').get().then((querySnapshot) {
-    List dataPengguna = querySnapshot.docs.map((doc) => doc.data()).toList();
+  CollectionReference user = FirebaseFirestore.instance.collection('user');
 
-    for(int i = 0; i < dataPengguna.length; i++) {
-      if(dataPengguna[i]['email'].toString() == email) {
-        hasil.add(dataPengguna[i]['nama']);
-        hasil.add(email);
-        hasil.add(dataPengguna[i]['jabatan']);
-      }
-    }
-  }).catchError((onError) {
-    print('[$onError]');
+  await user.add({
+    'nama': nama,
+    'email': email,
+    'jabatan': jabatan,
+    'tanggal': DateFormat('yyyy-MM-dd').format(DateTime.now()),
+    'jam': DateFormat('HH:mm').format(DateTime.now()),
+  }).then((value) {
+    hasil = true;
+  }).catchError((error) {
+    hasil = false;
   });
 
   return hasil;
 }
 
-Future<void> simpanUser(String email, String nama, String jabatan, Function fungsiBerhasil, Function fungsiGagal) async {
+Future<bool> ubahUser(String idDokumen, String email, String nama, String jabatan) async {
+  bool hasil;
+
   CollectionReference user = FirebaseFirestore.instance.collection('user');
 
-  return user.add({
+  await user.doc(idDokumen).set({
     'nama': nama,
     'email': email,
     'jabatan': jabatan,
     'tanggal': DateFormat('yyyy-MM-dd').format(DateTime.now()),
     'jam': DateFormat('HH:mm').format(DateTime.now()),
   }).then((value) {
-    fungsiBerhasil();
+    hasil = true;
   }).catchError((error) {
-    fungsiGagal();
+    hasil = false;
   });
+
+  return hasil;
 }
 
-Future<void> ubahUser(String idDokumen, String email, String nama, String jabatan, Function fungsiBerhasil, Function fungsiGagal) async {
+Future<bool> hapusUser(String idDokumen) async {
+  bool hasil;
+
   CollectionReference user = FirebaseFirestore.instance.collection('user');
 
-  return user.doc(idDokumen).set({
-    'nama': nama,
-    'email': email,
-    'jabatan': jabatan,
-    'tanggal': DateFormat('yyyy-MM-dd').format(DateTime.now()),
-    'jam': DateFormat('HH:mm').format(DateTime.now()),
-  }).then((value) {
-    fungsiBerhasil();
+  await user.doc(idDokumen).delete().then((value) {
+    hasil = true;
   }).catchError((error) {
-    fungsiGagal();
+    hasil = false;
   });
+
+  return hasil;
 }
 
-Future<void> hapusUser(String idDokumen, Function fungsiBerhasil, Function fungsiGagal) async {
-  CollectionReference user = FirebaseFirestore.instance.collection('user');
+/// Widget streambuilder untuk membaca data data pengguna berdasarkan waktu nyata (Real time)
 
-  return user.doc(idDokumen).delete().then((value) {
-    fungsiBerhasil();
-  }).catchError((error) {
-    fungsiGagal();
-  });
-}
-
-/// Widget streambuilder untuk membaca data berdasarkan waktu nyata (Real time)
-
-class LihatUserSistem extends StatelessWidget {
+class LihatDaftarUser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Stream<QuerySnapshot> _usersStream = FirebaseFirestore.instance.collection('user').snapshots();
@@ -189,14 +182,14 @@ class LihatUserSistem extends StatelessWidget {
                           dialogOpsi(context, 'Hapus data pengguna, Anda yakin?', () async {
                             tutupHalaman(context, null);
 
-                            await hapusUser(document.id, () {
+                            await hapusUser(document.id).then((value) {
+                              if(value == null || !value) {
+                                dialogOK(context, 'Terjadi kesalahan saat menghapus data, silahkan coba lagi', () {
+                                  tutupHalaman(context, null);
+                                }, () {
 
-                            }, () {
-                              dialogOK(context, 'Terjadi kesalahan saat menghapus data, silahkan coba lagi', () {
-                                tutupHalaman(context, null);
-                              }, () {
-
-                              });
+                                });
+                              }
                             });
                           }, () {
                             tutupHalaman(context, null);
@@ -232,12 +225,13 @@ class LihatUserSistem extends StatelessWidget {
   }
 }
 
-/// Layanan Petugas Desa
-Future<void> simpanKartuKeluarga(String nomorHp, List headerKK, List anggotaKeluarga, Function fungsiBerhasil, Function fungsiGagal) async {
+/// Layanan Penduduk
+Future<bool> simpanPenduduk(List headerKK, List anggotaKeluarga) async {
+  bool hasil;
+
   CollectionReference kartuKeluarga = FirebaseFirestore.instance.collection('data_penduduk');
 
-  return kartuKeluarga.add({
-    'no_hp': nomorHp,
+  await kartuKeluarga.add({
     'no_kk': headerKK[0],
     'alamat': headerKK[1],
     'rt': headerKK[2],
@@ -249,13 +243,13 @@ Future<void> simpanKartuKeluarga(String nomorHp, List headerKK, List anggotaKelu
     'provinsi': headerKK[8],
     'tanggal': DateFormat('yyyy-MM-dd').format(DateTime.now()),
     'jam': DateFormat('HH:mm').format(DateTime.now()),
-  }).then((hasil) {
-    DocumentReference dokumen = hasil;
+  }).then((docs) async {
+    DocumentReference dokumen = docs;
 
     CollectionReference anggota = kartuKeluarga.doc(dokumen.id).collection('anggota_keluarga');
 
     for(int i = 0; i < anggotaKeluarga.length; i++) {
-      anggota.add({
+      await anggota.add({
         'nama': anggotaKeluarga[i][0],
         'nik': anggotaKeluarga[i][1],
         'jenis_kelamin': anggotaKeluarga[i][2],
@@ -271,23 +265,24 @@ Future<void> simpanKartuKeluarga(String nomorHp, List headerKK, List anggotaKelu
         'no_kitap': anggotaKeluarga[i][12],
         'nama_ayah': anggotaKeluarga[i][13],
         'nama_ibu': anggotaKeluarga[i][14],
-      }).then((value) {
-        fungsiBerhasil();
-      }).catchError((onError) {
-        fungsiGagal();
       });
     }
+
+    hasil = true;
   }).catchError((error) {
-    fungsiGagal();
+    hasil = false;
   });
+
+  return hasil;
 }
 
-Future<void> ubahKartuKeluarga(String idDokumen, String nomorHp, List headerKK, List anggotaKeluarga, Function fungsiBerhasil, Function fungsiGagal) async {
+Future<bool> ubahPenduduk(String idDokumen, List headerKK, List anggotaKeluarga) async {
+  bool hasil;
+
   CollectionReference kartuKeluarga = FirebaseFirestore.instance.collection('data_penduduk');
   CollectionReference anggota = kartuKeluarga.doc(idDokumen).collection('anggota_keluarga');
 
-  return kartuKeluarga.doc(idDokumen).set({
-    'no_hp': nomorHp,
+  await kartuKeluarga.doc(idDokumen).set({
     'no_kk': headerKK[0],
     'alamat': headerKK[1],
     'rt': headerKK[2],
@@ -299,13 +294,17 @@ Future<void> ubahKartuKeluarga(String idDokumen, String nomorHp, List headerKK, 
     'provinsi': headerKK[8],
     'tanggal': DateFormat('yyyy-MM-dd').format(DateTime.now()),
     'jam': DateFormat('HH:mm').format(DateTime.now()),
-  }).then((hasil) async {
-    QuerySnapshot querySnapshot = await anggota.get();
+  }).then((value) async {
+    await anggota.get().then((snapshot ) async {
+      for(DocumentSnapshot doc in snapshot.docs) {
+        await doc.reference.delete();
+      }
+    });
 
-    for(int i = 0; i < querySnapshot.docs.length; i++) {
-      var snapshot = querySnapshot.docs[i];
+    CollectionReference dataAnggota = kartuKeluarga.doc(idDokumen).collection('anggota_keluarga');
 
-      anggota.doc(snapshot.id).set({
+    for(int i = 0; i < anggotaKeluarga.length; i++) {
+      await dataAnggota.add({
         'nama': anggotaKeluarga[i][0],
         'nik': anggotaKeluarga[i][1],
         'jenis_kelamin': anggotaKeluarga[i][2],
@@ -324,38 +323,44 @@ Future<void> ubahKartuKeluarga(String idDokumen, String nomorHp, List headerKK, 
       });
     }
 
-    fungsiBerhasil();
+    hasil = true;
   }).catchError((error) {
-    fungsiGagal();
+    hasil = false;
   });
+
+  return hasil;
 }
 
-Future<void> hapusKartuKeluarga(String idDokumen, Function fungsiBerhasil, Function fungsiGagal) async {
+Future<bool> hapusPenduduk(String idDokumen) async {
+  bool hasil;
+
   CollectionReference kartuKeluarga = FirebaseFirestore.instance.collection('data_penduduk');
   CollectionReference anggota = kartuKeluarga.doc(idDokumen).collection('anggota_keluarga');
 
-  return await anggota.get().then((snapshot) async {
+  await anggota.get().then((snapshot) async {
     for(DocumentSnapshot doc in snapshot.docs) {
       doc.reference.delete();
     }
 
     await kartuKeluarga.doc(idDokumen).delete().then((value) {
-      fungsiBerhasil();
+      hasil = true;
     }).catchError((error) {
-      fungsiGagal();
+      hasil = false;
     });
   });
+
+  return hasil;
 }
 
-/// Widget streambuilder untuk membaca data berdasarkan waktu nyata (Real time)
+/// Widget streambuilder untuk membaca data penduduk berdasarkan waktu nyata (Real time)
 
-class LihatDaftarKK extends StatelessWidget {
+class LihatDaftarPenduduk extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final Stream<QuerySnapshot> _kartuKeluargaStream = FirebaseFirestore.instance.collection('data_penduduk').snapshots();
+    final Stream<QuerySnapshot> _pendudukStream = FirebaseFirestore.instance.collection('data_penduduk').snapshots();
 
     return StreamBuilder<QuerySnapshot>(
-      stream: _kartuKeluargaStream,
+      stream: _pendudukStream,
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
           return Column(
@@ -403,30 +408,242 @@ class LihatDaftarKK extends StatelessWidget {
           children: snapshot.data.docs.map((DocumentSnapshot document) {
             Map<String, dynamic> data = document.data() as Map<String, dynamic>;
 
-            List dataAnggota = [];
+            final Stream<QuerySnapshot> _anggotaKeluargaStream = FirebaseFirestore.instance.collection('data_penduduk').doc(document.id).collection('anggota_keluarga').snapshots();
 
-            FirebaseFirestore.instance.collection('data_penduduk').doc(document.id).collection('anggota_keluarga').get().then((querySnapshot) {
-              List objekDataAnggota = querySnapshot.docs.map((doc) => doc.data()).toList();
-              for(int i = 0; i < objekDataAnggota.length; i++) {
-                dataAnggota.add([
-                  objekDataAnggota[i]['nama'],
-                  objekDataAnggota[i]['nik'],
-                  objekDataAnggota[i]['jenis_kelamin'],
-                  objekDataAnggota[i]['tempat_lahir'],
-                  objekDataAnggota[i]['tanggal_lahir'],
-                  objekDataAnggota[i]['agama'],
-                  objekDataAnggota[i]['pendidikan'],
-                  objekDataAnggota[i]['profesi'],
-                  objekDataAnggota[i]['status_perkawinan'],
-                  objekDataAnggota[i]['status_dalam_keluarga'],
-                  objekDataAnggota[i]['kewarganegaraan'],
-                  objekDataAnggota[i]['no_paspor'],
-                  objekDataAnggota[i]['no_kitap'],
-                  objekDataAnggota[i]['nama_ayah'],
-                  objekDataAnggota[i]['nama_ibu'],
-                ]);
-              }
-            });
+            return StreamBuilder<QuerySnapshot>(
+              stream: _anggotaKeluargaStream,
+              builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> anggotaSnapshot) {
+                List dataAnggota = [];
+
+                cekAnggotaKeluarga() {
+                  if(anggotaSnapshot.data != null && anggotaSnapshot.data.docs.isNotEmpty) {
+                    dataAnggota.clear();
+
+                    for(int i = 0; i < anggotaSnapshot.data.docs.length; i++) {
+                      dataAnggota.add([
+                        anggotaSnapshot.data.docs[i]['nama'],
+                        anggotaSnapshot.data.docs[i]['nik'],
+                        anggotaSnapshot.data.docs[i]['jenis_kelamin'],
+                        anggotaSnapshot.data.docs[i]['tempat_lahir'],
+                        anggotaSnapshot.data.docs[i]['tanggal_lahir'],
+                        anggotaSnapshot.data.docs[i]['agama'],
+                        anggotaSnapshot.data.docs[i]['pendidikan'],
+                        anggotaSnapshot.data.docs[i]['profesi'],
+                        anggotaSnapshot.data.docs[i]['status_perkawinan'],
+                        anggotaSnapshot.data.docs[i]['status_dalam_keluarga'],
+                        anggotaSnapshot.data.docs[i]['kewarganegaraan'],
+                        anggotaSnapshot.data.docs[i]['no_paspor'],
+                        anggotaSnapshot.data.docs[i]['no_kitap'],
+                        anggotaSnapshot.data.docs[i]['nama_ayah'],
+                        anggotaSnapshot.data.docs[i]['nama_ibu'],
+                      ]);
+                    }
+                  }
+                }
+
+                cekAnggotaKeluarga();
+
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0,),
+                  child: Card(
+                    elevation: 10.0,
+                    child: Padding(
+                      padding: EdgeInsets.all(10.0,),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TeksGlobal(
+                              isi: data['no_kk'],
+                              ukuran: 18.0,
+                              tebal: true,
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              pindahKeHalaman(context, FormKartuKeluarga(
+                                dataKK: [
+                                  document.id,
+                                  data,
+                                  dataAnggota,
+                                ],
+                              ), (panggilKembali) {
+                                cekAnggotaKeluarga();
+                              });
+                            },
+                            borderRadius: BorderRadius.circular(100.0,),
+                            child: Padding(
+                              padding: EdgeInsets.all(10.0,),
+                              child: Icon(
+                                Icons.edit,
+                                size: 25.0,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 5.0,
+                          ),
+                          InkWell(
+                            onTap: () {
+                              dialogOpsi(context, 'Hapus data penduduk, Anda yakin?', () async {
+                                tutupHalaman(context, null);
+
+                                await hapusPenduduk(document.id).then((hasil) {
+                                  if(hasil == null || !hasil) {
+                                    dialogOK(context, 'Terjadi kesalahan saat menghapus data, silahkan coba lagi', () {
+                                      tutupHalaman(context, null);
+                                    }, () {
+
+                                    });
+                                  }
+                                });
+                              }, () {
+                                tutupHalaman(context, null);
+                              });
+                            },
+                            borderRadius: BorderRadius.circular(100.0,),
+                            child: Padding(
+                              padding: EdgeInsets.all(10.0,),
+                              child: Icon(
+                                Icons.delete,
+                                color: Colors.red,
+                                size: 25.0,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          }).toList(),
+        ) :
+        Center(
+          child: TeksGlobal(
+            isi: 'Tidak ada data tersimpan...',
+            ukuran: 16.0,
+            tebal: true,
+            posisi: TextAlign.center,
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// Layanan Berkas
+Future<bool> simpanDataKTP(String noKK, String nik, String tanggalPengajuan, String tanggalBerlaku) async {
+  bool hasil;
+
+  CollectionReference berkasDaftarKTP = FirebaseFirestore.instance.collection('berkas_daftar_ktp');
+
+  await berkasDaftarKTP.add({
+    'no_kk': noKK,
+    'nik': nik,
+    'tanggal_pengajuan': tanggalPengajuan,
+    'tanggal_berlaku': tanggalBerlaku,
+    'tanggal': DateFormat('yyyy-MM-dd').format(DateTime.now()),
+    'jam': DateFormat('HH:mm').format(DateTime.now()),
+  }).then((value) {
+    hasil = true;
+  }).catchError((error) {
+    hasil = false;
+  });
+
+  return hasil;
+}
+
+Future<bool> ubahDataKTP(String idDokumen, String noKK, String nik, String tanggalPengajuan, String tanggalBerlaku) async {
+  bool hasil;
+
+  CollectionReference berkasDaftarKTP = FirebaseFirestore.instance.collection('berkas_daftar_ktp');
+
+  await berkasDaftarKTP.doc(idDokumen).set({
+    'no_kk': noKK,
+    'nik': nik,
+    'tanggal_pengajuan': tanggalPengajuan,
+    'tanggal_berlaku': tanggalBerlaku,
+    'tanggal': DateFormat('yyyy-MM-dd').format(DateTime.now()),
+    'jam': DateFormat('HH:mm').format(DateTime.now()),
+  }).then((value) {
+    hasil = true;
+  }).catchError((error) {
+    hasil = false;
+  });
+
+  return hasil;
+}
+
+Future<bool> hapusDataKTP(String idDokumen) async {
+  bool hasil;
+
+  CollectionReference berkasDaftarKTP = FirebaseFirestore.instance.collection('berkas_daftar_ktp');
+
+  await berkasDaftarKTP.doc(idDokumen).delete().then((value) {
+    hasil = true;
+  }).catchError((error) {
+    hasil = false;
+  });
+
+  return hasil;
+}
+
+/// Widget streambuilder untuk membaca data berkas berdasarkan waktu nyata (Real time)
+
+class LihatDaftarDataKTP extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final Stream<QuerySnapshot> _berkasKTPStream = FirebaseFirestore.instance.collection('berkas_daftar_ktp').snapshots();
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: _berkasKTPStream,
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.signal_wifi_off,
+                size: 40.0,
+              ),
+              SizedBox(
+                height: 30.0,
+              ),
+              TeksGlobal(
+                isi: 'Gagal terhubung ke server',
+                ukuran: 20.0,
+                tebal: true,
+                posisi: TextAlign.center,
+              ),
+            ],
+          );
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: Center(
+                  child: TeksGlobal(
+                    isi: 'Sedang memuat...',
+                    ukuran: 16.0,
+                    tebal: true,
+                    posisi: TextAlign.center,
+                  ),
+                ),
+              ),
+              IndikatorProgressGlobal(),
+            ],
+          );
+        }
+
+        return snapshot.data.docs.length != 0 ?
+        ListView(
+          children: snapshot.data.docs.map((DocumentSnapshot document) {
+            Map<String, dynamic> data = document.data() as Map<String, dynamic>;
 
             return Padding(
               padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0,),
@@ -437,21 +654,30 @@ class LihatDaftarKK extends StatelessWidget {
                   child: Row(
                     children: [
                       Expanded(
-                        child: TeksGlobal(
-                          isi: data['no_kk'],
-                          ukuran: 18.0,
-                          tebal: true,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            TeksGlobal(
+                              isi: 'NIK: ${data['nik']}',
+                              tebal: true,
+                              ukuran: 16.0,
+                            ),
+                            TeksGlobal(
+                              isi: 'Nomor KK: ${data['no_kk']}',
+                              ukuran: 14.0,
+                            ),
+                          ],
                         ),
                       ),
                       InkWell(
                         onTap: () {
-                          pindahKeHalaman(context, FormKartuKeluarga(
-                            dataKK: [
-                              document.id,
-                              data,
-                              dataAnggota,
-                            ],
-                          ), (panggilKembali) {
+                          pindahKeHalaman(context, FormKeteranganDaftarKTP(dataKeterangan: [
+                            document.id,
+                            data['no_kk'],
+                            data['nik'],
+                            data['tanggal_pengajuan'],
+                            data['tanggal_berlaku'],
+                          ]), (panggilKembali) {
 
                           });
                         },
@@ -469,17 +695,17 @@ class LihatDaftarKK extends StatelessWidget {
                       ),
                       InkWell(
                         onTap: () {
-                          dialogOpsi(context, 'Hapus data pengguna, Anda yakin?', () async {
+                          dialogOpsi(context, 'Hapus data berkas, Anda yakin?', () async {
                             tutupHalaman(context, null);
 
-                            await hapusKartuKeluarga(document.id, () {
+                            await hapusDataKTP(document.id).then((hasil) {
+                              if(hasil == null || !hasil) {
+                                dialogOK(context, 'Terjadi kesalahan saat menghapus data, silahkan coba lagi', () {
+                                  tutupHalaman(context, null);
+                                }, () {
 
-                            }, () {
-                              dialogOK(context, 'Terjadi kesalahan saat menghapus data, silahkan coba lagi', () {
-                                tutupHalaman(context, null);
-                              }, () {
-
-                              });
+                                });
+                              }
                             });
                           }, () {
                             tutupHalaman(context, null);

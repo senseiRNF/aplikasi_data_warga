@@ -1,12 +1,12 @@
-List daftarJenisKelamin = [
-  'LAKI-LAKI',
-  'PEREMPUAN',
-];
-
 List daftarJabatan = [
   'Admin',
   'Petugas Desa',
   'Kepala Desa',
+];
+
+List daftarJenisKelamin = [
+  'LAKI-LAKI',
+  'PEREMPUAN',
 ];
 
 List daftarProvinsi = [
@@ -281,4 +281,11 @@ List daftarStatusDalamKeluarga = [
 List daftarKewarganegaraan = [
   'WNI',
   'WNA',
+];
+
+List daftarBerkas = [
+  'Keterangan Pendaftaran KTP',
+  'Keterangan Kelahiran',
+  'Keterangan Kematian',
+  'Keterangan Pindah Domisili',
 ];

@@ -105,7 +105,7 @@ class _HalamanManajemenPendudukState extends State<HalamanManajemenPenduduk> {
                 height: 10.0,
               ),
               Expanded(
-                child: LihatDaftarKK(),
+                child: LihatDaftarPenduduk(),
               ),
             ],
           ),

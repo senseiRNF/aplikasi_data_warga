@@ -103,7 +103,7 @@ class _HalamanManajemenPenggunaState extends State<HalamanManajemenPengguna> {
                 height: 10.0,
               ),
               Expanded(
-                child: LihatUserSistem(),
+                child: LihatDaftarUser(),
               ),
             ],
           ),

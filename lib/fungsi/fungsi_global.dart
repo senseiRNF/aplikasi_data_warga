@@ -101,7 +101,7 @@ void dialogOpsi(BuildContext context, String pesan, Function tekanYa, Function t
   );
 }
 
-void dialogDaftarOpsi(BuildContext context, String judul, List daftarOpsi, Function tutupDialog) {
+void dialogDaftarOpsi(BuildContext context, List daftarOpsi, Function tutupDialog) {
   showDialog(
     context: context,
     builder: (BuildContext dialogContext) {
