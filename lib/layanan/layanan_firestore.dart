@@ -669,6 +669,138 @@ Future<bool> hapusDataKelahiran(String idDokumen) async {
   return hasil;
 }
 
+Future<bool> simpanDataKematian(String noKK, String nik, String tempatMeninggal, String tanggalMeninggal, String hariMeninggal, String usiaMeninggal, String tanggalPengajuan) async {
+  bool hasil;
+
+  CollectionReference berkasKematian = FirebaseFirestore.instance.collection('berkas_kematian');
+
+  await berkasKematian.add({
+    'no_kk': noKK,
+    'nik': nik,
+    'tempat_meninggal': tempatMeninggal,
+    'tanggal_meninggal': tanggalMeninggal,
+    'hari_meninggal': hariMeninggal,
+    'usia_meninggal': usiaMeninggal,
+    'tanggal_pengajuan': tanggalPengajuan,
+    'tanggal': DateFormat('yyyy-MM-dd').format(DateTime.now()),
+    'jam': DateFormat('HH:mm').format(DateTime.now()),
+  }).then((value) {
+    hasil = true;
+  }).catchError((error) {
+    hasil = false;
+  });
+
+  return hasil;
+}
+
+Future<bool> ubahDataKematian(String idDokumen, String noKK, String nik, String tempatMeninggal, String tanggalMeninggal, String hariMeninggal, String usiaMeninggal, String tanggalPengajuan) async {
+  bool hasil;
+
+  CollectionReference berkasKematian = FirebaseFirestore.instance.collection('berkas_kematian');
+
+  await berkasKematian.doc(idDokumen).set({
+    'no_kk': noKK,
+    'nik': nik,
+    'tempat_meninggal': tempatMeninggal,
+    'tanggal_meninggal': tanggalMeninggal,
+    'hari_meninggal': hariMeninggal,
+    'usia_meninggal': usiaMeninggal,
+    'tanggal_pengajuan': tanggalPengajuan,
+    'tanggal': DateFormat('yyyy-MM-dd').format(DateTime.now()),
+    'jam': DateFormat('HH:mm').format(DateTime.now()),
+  }).then((value) {
+    hasil = true;
+  }).catchError((error) {
+    hasil = false;
+  });
+
+  return hasil;
+}
+
+Future<bool> hapusDataKematian(String idDokumen) async {
+  bool hasil;
+
+  CollectionReference berkasKematian = FirebaseFirestore.instance.collection('berkas_kematian');
+
+  await berkasKematian.doc(idDokumen).delete().then((value) {
+    hasil = true;
+  }).catchError((error) {
+    hasil = false;
+  });
+
+  return hasil;
+}
+
+Future<bool> simpanDataPindah(String noSuratPindah, String nik, String alasanPindah, String alamatPindah, String rtPindah, String rwPindah, String desaPindah, String kecamatanPindah, String kabupatenPindah, String provinsiPindah, String tanggalPindah) async {
+  bool hasil;
+
+  CollectionReference berkasPindah = FirebaseFirestore.instance.collection('berkas_pindah');
+
+  await berkasPindah.add({
+    'no_sk_pindah': noSuratPindah,
+    'nik': nik,
+    'alasan_pindah': alasanPindah,
+    'alamat_pindah': alamatPindah,
+    'rt_pindah': rtPindah,
+    'rw_pindah': rwPindah,
+    'desa_pindah': desaPindah,
+    'kecamatan_pindah': kecamatanPindah,
+    'kabupaten_pindah': kabupatenPindah,
+    'provinsi_pindah': provinsiPindah,
+    'tanggal_pindah': tanggalPindah,
+    'tanggal': DateFormat('yyyy-MM-dd').format(DateTime.now()),
+    'jam': DateFormat('HH:mm').format(DateTime.now()),
+  }).then((value) {
+    hasil = true;
+  }).catchError((error) {
+    hasil = false;
+  });
+
+  return hasil;
+}
+
+Future<bool> ubahDataPindah(String idDokumen, String noSuratPindah, String nik, String alasanPindah, String alamatPindah, String rtPindah, String rwPindah, String desaPindah, String kecamatanPindah, String kabupatenPindah, String provinsiPindah, String tanggalPindah) async {
+  bool hasil;
+
+  CollectionReference berkasPindah = FirebaseFirestore.instance.collection('berkas_pindah');
+
+  await berkasPindah.doc(idDokumen).set({
+    'no_sk_pindah': noSuratPindah,
+    'nik': nik,
+    'alasan_pindah': alasanPindah,
+    'alamat_pindah': alamatPindah,
+    'rt_pindah': rtPindah,
+    'rw_pindah': rwPindah,
+    'desa_pindah': desaPindah,
+    'kecamatan_pindah': kecamatanPindah,
+    'kabupaten_pindah': kabupatenPindah,
+    'provinsi_pindah': provinsiPindah,
+    'tanggal_pindah': tanggalPindah,
+    'tanggal': DateFormat('yyyy-MM-dd').format(DateTime.now()),
+    'jam': DateFormat('HH:mm').format(DateTime.now()),
+  }).then((value) {
+    hasil = true;
+  }).catchError((error) {
+    hasil = false;
+  });
+
+  return hasil;
+}
+
+Future<bool> hapusDataPindah(String idDokumen) async {
+  bool hasil;
+
+  CollectionReference berkasPindah = FirebaseFirestore.instance.collection('berkas_pindah');
+
+  await berkasPindah.doc(idDokumen).delete().then((value) {
+    hasil = true;
+  }).catchError((error) {
+    hasil = false;
+  });
+
+  return hasil;
+}
+
 /// Widget streambuilder untuk membaca data berkas berdasarkan waktu nyata (Real time)
 
 class LihatDaftarDataKTP extends StatelessWidget {
@@ -934,6 +1066,316 @@ class LihatDaftarDataKelahiran extends StatelessWidget {
                             tutupHalaman(context, null);
 
                             await hapusDataKelahiran(document.id).then((hasil) {
+                              if(hasil == null || !hasil) {
+                                dialogOK(context, 'Terjadi kesalahan saat menghapus data, silahkan coba lagi', () {
+                                  tutupHalaman(context, null);
+                                }, () {
+
+                                });
+                              }
+                            });
+                          }, () {
+                            tutupHalaman(context, null);
+                          });
+                        },
+                        borderRadius: BorderRadius.circular(100.0,),
+                        child: Padding(
+                          padding: EdgeInsets.all(10.0,),
+                          child: Icon(
+                            Icons.delete,
+                            color: Colors.red,
+                            size: 25.0,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ) :
+        Center(
+          child: TeksGlobal(
+            isi: 'Tidak ada data tersimpan...',
+            ukuran: 16.0,
+            tebal: true,
+            posisi: TextAlign.center,
+          ),
+        );
+      },
+    );
+  }
+}
+
+class LihatDaftarDataKematian extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final Stream<QuerySnapshot> _berkasKTPStream = FirebaseFirestore.instance.collection('berkas_kematian').snapshots();
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: _berkasKTPStream,
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.signal_wifi_off,
+                size: 40.0,
+              ),
+              SizedBox(
+                height: 30.0,
+              ),
+              TeksGlobal(
+                isi: 'Gagal terhubung ke server',
+                ukuran: 20.0,
+                tebal: true,
+                posisi: TextAlign.center,
+              ),
+            ],
+          );
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: Center(
+                  child: TeksGlobal(
+                    isi: 'Sedang memuat...',
+                    ukuran: 16.0,
+                    tebal: true,
+                    posisi: TextAlign.center,
+                  ),
+                ),
+              ),
+              IndikatorProgressGlobal(),
+            ],
+          );
+        }
+
+        return snapshot.data.docs.length != 0 ?
+        ListView(
+          children: snapshot.data.docs.map((DocumentSnapshot document) {
+            Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+
+            return Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0,),
+              child: Card(
+                elevation: 10.0,
+                child: Padding(
+                  padding: EdgeInsets.all(10.0,),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            TeksGlobal(
+                              isi: 'NIK: ${data['nik']}',
+                              tebal: true,
+                              ukuran: 16.0,
+                            ),
+                            TeksGlobal(
+                              isi: 'Nomor KK: ${data['no_kk']}',
+                              ukuran: 14.0,
+                            ),
+                          ],
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          pindahKeHalaman(context, FormKeteranganKematian(dataKeterangan: [
+                            document.id,
+                            data['no_kk'],
+                            data['nik'],
+                            data['tempat_meninggal'],
+                            data['tanggal_meninggal'],
+                            data['hari_meninggal'],
+                            data['usia_meninggal'],
+                            data['tanggal_pengajuan'],
+                          ]), (panggilKembali) {
+
+                          });
+                        },
+                        borderRadius: BorderRadius.circular(100.0,),
+                        child: Padding(
+                          padding: EdgeInsets.all(10.0,),
+                          child: Icon(
+                            Icons.edit,
+                            size: 25.0,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 5.0,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          dialogOpsi(context, 'Hapus data berkas, Anda yakin?', () async {
+                            tutupHalaman(context, null);
+
+                            await hapusDataKematian(document.id).then((hasil) {
+                              if(hasil == null || !hasil) {
+                                dialogOK(context, 'Terjadi kesalahan saat menghapus data, silahkan coba lagi', () {
+                                  tutupHalaman(context, null);
+                                }, () {
+
+                                });
+                              }
+                            });
+                          }, () {
+                            tutupHalaman(context, null);
+                          });
+                        },
+                        borderRadius: BorderRadius.circular(100.0,),
+                        child: Padding(
+                          padding: EdgeInsets.all(10.0,),
+                          child: Icon(
+                            Icons.delete,
+                            color: Colors.red,
+                            size: 25.0,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ) :
+        Center(
+          child: TeksGlobal(
+            isi: 'Tidak ada data tersimpan...',
+            ukuran: 16.0,
+            tebal: true,
+            posisi: TextAlign.center,
+          ),
+        );
+      },
+    );
+  }
+}
+
+class LihatDaftarDataPindah extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final Stream<QuerySnapshot> _berkasKTPStream = FirebaseFirestore.instance.collection('berkas_pindah').snapshots();
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: _berkasKTPStream,
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.signal_wifi_off,
+                size: 40.0,
+              ),
+              SizedBox(
+                height: 30.0,
+              ),
+              TeksGlobal(
+                isi: 'Gagal terhubung ke server',
+                ukuran: 20.0,
+                tebal: true,
+                posisi: TextAlign.center,
+              ),
+            ],
+          );
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: Center(
+                  child: TeksGlobal(
+                    isi: 'Sedang memuat...',
+                    ukuran: 16.0,
+                    tebal: true,
+                    posisi: TextAlign.center,
+                  ),
+                ),
+              ),
+              IndikatorProgressGlobal(),
+            ],
+          );
+        }
+
+        return snapshot.data.docs.length != 0 ?
+        ListView(
+          children: snapshot.data.docs.map((DocumentSnapshot document) {
+            Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+
+            return Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0,),
+              child: Card(
+                elevation: 10.0,
+                child: Padding(
+                  padding: EdgeInsets.all(10.0,),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            TeksGlobal(
+                              isi: 'NIK: ${data['nik']}',
+                              tebal: true,
+                              ukuran: 16.0,
+                            ),
+                            TeksGlobal(
+                              isi: 'Tanggal Pindah: ${DateFormat('dd-MM-yyyy').format(DateTime.parse(data['tanggal_pindah']))}',
+                              ukuran: 14.0,
+                            ),
+                          ],
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          pindahKeHalaman(context, FormKeteranganPindah(dataKeterangan: [
+                            document.id,
+                            data['no_sk_pindah'],
+                            data['nik'],
+                            data['alasan_pindah'],
+                            data['alamat_pindah'],
+                            data['rt_pindah'],
+                            data['rw_pindah'],
+                            data['desa_pindah'],
+                            data['kecamatan_pindah'],
+                            data['kabupaten_pindah'],
+                            data['provinsi_pindah'],
+                            data['tanggal_pindah'],
+                          ]), (panggilKembali) {
+
+                          });
+                        },
+                        borderRadius: BorderRadius.circular(100.0,),
+                        child: Padding(
+                          padding: EdgeInsets.all(10.0,),
+                          child: Icon(
+                            Icons.edit,
+                            size: 25.0,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 5.0,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          dialogOpsi(context, 'Hapus data berkas, Anda yakin?', () async {
+                            tutupHalaman(context, null);
+
+                            await hapusDataKematian(document.id).then((hasil) {
                               if(hasil == null || !hasil) {
                                 dialogOK(context, 'Terjadi kesalahan saat menghapus data, silahkan coba lagi', () {
                                   tutupHalaman(context, null);

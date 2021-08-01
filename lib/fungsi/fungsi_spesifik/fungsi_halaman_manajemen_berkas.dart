@@ -150,6 +150,7 @@ Future<List> muatDaftarAnggotaKeluarga(String idDokumen) async {
       hasil.add([
         dataAnggota[i]['nik'],
         dataAnggota[i]['nama'],
+        dataAnggota[i]['tanggal_lahir'],
       ]);
     }
   }).catchError((onError) {
@@ -197,6 +198,45 @@ Future<String> muatAlamat(String noKK) async {
   }).catchError((onError) {
     print('[$onError]');
   });
+
+  return hasil;
+}
+
+String konversiHari(String hari) {
+  String hasil;
+
+  switch(hari) {
+    case 'Sunday':
+      hasil = 'Minggu';
+      break;
+    case 'Monday':
+      hasil = 'Senin';
+      break;
+    case 'Tuesday':
+      hasil = 'Selasa';
+      break;
+    case 'Wednesday':
+      hasil = 'Rabu';
+      break;
+    case 'Thursday':
+      hasil = 'Kamis';
+      break;
+    case 'Friday':
+      hasil = 'Jumat';
+      break;
+    case 'Saturday':
+      hasil = 'Sabtu';
+      break;
+  }
+
+  return hasil;
+}
+
+String hitungUmur(int tahunLahir) {
+  String hasil;
+
+  int umur = DateTime.now().year - tahunLahir;
+  hasil = umur.toString();
 
   return hasil;
 }

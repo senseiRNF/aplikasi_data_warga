@@ -306,7 +306,11 @@ class _HalamanManajemenKematianState extends State<HalamanManajemenKematian> {
                   ),
                   child: InkWell(
                     onTap: () {
+                      pindahKeHalaman(context, FormKeteranganKematian(
+                        dataKeterangan: [],
+                      ), (panggilKembali) {
 
+                      });
                     },
                     borderRadius: BorderRadius.circular(5.0,),
                     child: Card(
@@ -339,7 +343,7 @@ class _HalamanManajemenKematianState extends State<HalamanManajemenKematian> {
                 height: 10.0,
               ),
               Expanded(
-                child: Material(),
+                child: LihatDaftarDataKematian(),
               ),
             ],
           ),
@@ -354,14 +358,14 @@ class _HalamanManajemenKematianState extends State<HalamanManajemenKematian> {
   }
 }
 
-/// Pindah Domisili
-class HalamanManajemenPindahDomisili extends StatefulWidget {
+/// Pindah
+class HalamanManajemenPindah extends StatefulWidget {
 
   @override
-  _HalamanManajemenPindahDomisiliState createState() => _HalamanManajemenPindahDomisiliState();
+  _HalamanManajemenPindahState createState() => _HalamanManajemenPindahState();
 }
 
-class _HalamanManajemenPindahDomisiliState extends State<HalamanManajemenPindahDomisili> {
+class _HalamanManajemenPindahState extends State<HalamanManajemenPindah> {
 
   @override
   void initState() {
@@ -420,7 +424,11 @@ class _HalamanManajemenPindahDomisiliState extends State<HalamanManajemenPindahD
                   ),
                   child: InkWell(
                     onTap: () {
+                      pindahKeHalaman(context, FormKeteranganPindah(
+                        dataKeterangan: [],
+                      ), (panggilKembali) {
 
+                      });
                     },
                     borderRadius: BorderRadius.circular(5.0,),
                     child: Card(
@@ -453,7 +461,7 @@ class _HalamanManajemenPindahDomisiliState extends State<HalamanManajemenPindahD
                 height: 10.0,
               ),
               Expanded(
-                child: Material(),
+                child: LihatDaftarDataPindah(),
               ),
             ],
           ),

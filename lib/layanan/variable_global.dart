@@ -287,5 +287,5 @@ List daftarBerkas = [
   'Keterangan Pendaftaran KTP',
   'Keterangan Kelahiran',
   'Keterangan Kematian',
-  'Keterangan Pindah Domisili',
+  'Keterangan Pindah Penduduk',
 ];

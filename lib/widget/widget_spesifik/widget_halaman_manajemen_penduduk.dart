@@ -462,317 +462,303 @@ class _FormDaftarAnggotaKeluargaState extends State<FormDaftarAnggotaKeluarga> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: Stack(
+        child: LatarBelakangGlobal(
+          tampilan: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Image.asset(
-                      'aset/gambar/latar_belakang.png',
-                      fit: BoxFit.fitWidth,
+                  Padding(
+                    padding: EdgeInsets.all(5.0,),
+                    child: Material(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100.0,),
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          tutupHalaman(context, null);
+                        },
+                        borderRadius: BorderRadius.circular(100.0,),
+                        child: Padding(
+                          padding: EdgeInsets.all(15.0,),
+                          child: Icon(
+                            Icons.arrow_back,
+                            size: 30.0,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.all(5.0,),
-                            child: Material(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(100.0,),
-                              ),
-                              child: InkWell(
-                                onTap: () {
-                                  tutupHalaman(context, null);
-                                },
-                                borderRadius: BorderRadius.circular(100.0,),
-                                child: Padding(
-                                  padding: EdgeInsets.all(15.0,),
-                                  child: Icon(
-                                    Icons.arrow_back,
-                                    size: 30.0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: TeksGlobal(
-                              isi: 'Data Anggota Keluarga',
-                              ukuran: 18.0,
-                            ),
-                          )
-                        ],
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.all(5.0,),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.black,
-                              ),
-                              borderRadius: BorderRadius.circular(5.0,),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.all(5.0,),
-                              child: ListView(
-                                children: [
-                                  InputTeksGlobal(
-                                    label: 'Nama Lengkap',
-                                    controller: pengaturNama,
-                                    kapitalisasi: TextCapitalization.characters,
-                                  ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
-                                  InputAngkaTanpaPemisah(
-                                    label: 'NIK',
-                                    controller: pengaturNIK,
-                                  ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
-                                  InputOpsi(
-                                    label: 'Jenis Kelamin',
-                                    controller: pengaturJenisKelamin,
-                                    daftarOpsi: daftarJenisKelamin,
-                                    fungsiGanti: (hasil) {
-                                      if(hasil != null) {
-                                        setState(() {
-                                          pengaturJenisKelamin.text = hasil;
-                                        });
-                                      }
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
-                                  InputOpsi(
-                                    label: 'Tempat Lahir',
-                                    controller: pengaturTempatLahir,
-                                    daftarOpsi: daftarKota,
-                                    fungsiGanti: (hasil) {
-                                      if(hasil != null) {
-                                        setState(() {
-                                          pengaturTempatLahir.text = hasil;
-                                        });
-                                      }
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
-                                  InputTanggal(
-                                    label: 'Tanggal Lahir',
-                                    controller: pengaturTanggalLahir,
-                                    tanggal: tanggalLahir,
-                                    fungsiGanti: (hasil) {
-                                      setState(() {
-                                        tanggalLahir = hasil;
-                                        pengaturTanggalLahir.text = DateFormat('dd-MM-yyyy').format(hasil);
-                                      });
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
-                                  InputOpsi(
-                                    label: 'Agama',
-                                    controller: pengaturAgama,
-                                    daftarOpsi: daftarAgama,
-                                    fungsiGanti: (hasil) {
-                                      if(hasil != null) {
-                                        setState(() {
-                                          pengaturAgama.text = hasil;
-                                        });
-                                      }
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
-                                  InputOpsi(
-                                    label: 'Pendidikan',
-                                    controller: pengaturPendidikan,
-                                    daftarOpsi: daftarPendidikan,
-                                    fungsiGanti: (hasil) {
-                                      if(hasil != null) {
-                                        setState(() {
-                                          pengaturPendidikan.text = hasil;
-                                        });
-                                      }
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
-                                  InputOpsi(
-                                    label: 'Profesi',
-                                    controller: pengaturProfesi,
-                                    daftarOpsi: daftarProfesi,
-                                    fungsiGanti: (hasil) {
-                                      if(hasil != null) {
-                                        setState(() {
-                                          pengaturProfesi.text = hasil;
-                                        });
-                                      }
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
-                                  InputOpsi(
-                                    label: 'Status Perkawinan',
-                                    controller: pengaturStatusPerkawinan,
-                                    daftarOpsi: daftarStatusPerkawinan,
-                                    fungsiGanti: (hasil) {
-                                      if(hasil != null) {
-                                        setState(() {
-                                          pengaturStatusPerkawinan.text = hasil;
-                                        });
-                                      }
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
-                                  InputOpsi(
-                                    label: 'Status dalam Keluarga',
-                                    controller: pengaturStatusDalamKeluarga,
-                                    daftarOpsi: daftarStatusDalamKeluarga,
-                                    fungsiGanti: (hasil) {
-                                      if(hasil != null) {
-                                        setState(() {
-                                          pengaturStatusDalamKeluarga.text = hasil;
-                                        });
-                                      }
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
-                                  InputOpsi(
-                                    label: 'Kewarganegaraan',
-                                    controller: pengaturKewarganegaraan,
-                                    daftarOpsi: daftarKewarganegaraan,
-                                    fungsiGanti: (hasil) {
-                                      if(hasil != null) {
-                                        setState(() {
-                                          pengaturKewarganegaraan.text = hasil;
-                                        });
-                                      }
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
-                                  InputTeksGlobal(
-                                    label: 'No. Paspor',
-                                    controller: pengaturNoPaspor,
-                                  ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
-                                  InputTeksGlobal(
-                                    label: 'No. KITAP',
-                                    controller: pengaturNoKITAP,
-                                  ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
-                                  InputTeksGlobal(
-                                    label: 'Nama Ayah',
-                                    controller: pengaturNamaAyah,
-                                    kapitalisasi: TextCapitalization.characters,
-                                  ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
-                                  InputTeksGlobal(
-                                    label: 'Nama Ibu',
-                                    controller: pengaturNamaIbu,
-                                    kapitalisasi: TextCapitalization.characters,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(5.0,),
-                        child: TombolGlobal(
-                          judul: 'Simpan',
-                          fungsiTekan: () {
-                            if(pengaturNama.text != ''
-                                && pengaturNIK.text != ''
-                                && pengaturJenisKelamin.text != ''
-                                && pengaturTempatLahir.text != ''
-                                && pengaturTanggalLahir.text != ''
-                                && pengaturAgama.text != ''
-                                && pengaturPendidikan.text != ''
-                                && pengaturProfesi.text != ''
-                                && pengaturStatusPerkawinan.text != ''
-                                && pengaturStatusDalamKeluarga.text != ''
-                                && pengaturKewarganegaraan.text != ''
-                                && pengaturNamaAyah.text != ''
-                                && pengaturNamaIbu.text != '') {
-                              if(widget.dataAnggota.isEmpty) {
-                                tutupHalaman(context, [
-                                  pengaturNama.text,
-                                  pengaturNIK.text,
-                                  pengaturJenisKelamin.text,
-                                  pengaturTempatLahir.text,
-                                  DateFormat('yyyy-MM-dd').format(tanggalLahir),
-                                  pengaturAgama.text,
-                                  pengaturPendidikan.text,
-                                  pengaturProfesi.text,
-                                  pengaturStatusPerkawinan.text,
-                                  pengaturStatusDalamKeluarga.text,
-                                  pengaturKewarganegaraan.text,
-                                  pengaturNoPaspor.text,
-                                  pengaturNoKITAP.text,
-                                  pengaturNamaAyah.text,
-                                  pengaturNamaIbu.text,
-                                ]);
-                              } else {
-                                tutupHalaman(context, [
-                                  pengaturNama.text,
-                                  pengaturNIK.text,
-                                  pengaturJenisKelamin.text,
-                                  pengaturTempatLahir.text,
-                                  DateFormat('yyyy-MM-dd').format(tanggalLahir),
-                                  pengaturAgama.text,
-                                  pengaturPendidikan.text,
-                                  pengaturProfesi.text,
-                                  pengaturStatusPerkawinan.text,
-                                  pengaturStatusDalamKeluarga.text,
-                                  pengaturKewarganegaraan.text,
-                                  pengaturNoPaspor.text,
-                                  pengaturNoKITAP.text,
-                                  pengaturNamaAyah.text,
-                                  pengaturNamaIbu.text,
-                                ]);
-                              }
-                            }
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+                  Expanded(
+                    child: TeksGlobal(
+                      isi: 'Data Anggota Keluarga',
+                      ukuran: 18.0,
+                    ),
+                  )
                 ],
               ),
-            ),
-          ],
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.all(5.0,),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.black,
+                      ),
+                      borderRadius: BorderRadius.circular(5.0,),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(5.0,),
+                      child: ListView(
+                        children: [
+                          SizedBox(
+                            height: 10.0,
+                          ),
+                          InputTeksGlobal(
+                            label: 'Nama Lengkap',
+                            controller: pengaturNama,
+                            kapitalisasi: TextCapitalization.characters,
+                          ),
+                          SizedBox(
+                            height: 10.0,
+                          ),
+                          InputAngkaTanpaPemisah(
+                            label: 'NIK',
+                            controller: pengaturNIK,
+                          ),
+                          SizedBox(
+                            height: 10.0,
+                          ),
+                          InputOpsi(
+                            label: 'Jenis Kelamin',
+                            controller: pengaturJenisKelamin,
+                            daftarOpsi: daftarJenisKelamin,
+                            fungsiGanti: (hasil) {
+                              if(hasil != null) {
+                                setState(() {
+                                  pengaturJenisKelamin.text = hasil;
+                                });
+                              }
+                            },
+                          ),
+                          SizedBox(
+                            height: 10.0,
+                          ),
+                          InputOpsi(
+                            label: 'Tempat Lahir',
+                            controller: pengaturTempatLahir,
+                            daftarOpsi: daftarKota,
+                            fungsiGanti: (hasil) {
+                              if(hasil != null) {
+                                setState(() {
+                                  pengaturTempatLahir.text = hasil;
+                                });
+                              }
+                            },
+                          ),
+                          SizedBox(
+                            height: 10.0,
+                          ),
+                          InputTanggal(
+                            label: 'Tanggal Lahir',
+                            controller: pengaturTanggalLahir,
+                            tanggal: tanggalLahir,
+                            fungsiGanti: (hasil) {
+                              setState(() {
+                                tanggalLahir = hasil;
+                                pengaturTanggalLahir.text = DateFormat('dd-MM-yyyy').format(hasil);
+                              });
+                            },
+                          ),
+                          SizedBox(
+                            height: 10.0,
+                          ),
+                          InputOpsi(
+                            label: 'Agama',
+                            controller: pengaturAgama,
+                            daftarOpsi: daftarAgama,
+                            fungsiGanti: (hasil) {
+                              if(hasil != null) {
+                                setState(() {
+                                  pengaturAgama.text = hasil;
+                                });
+                              }
+                            },
+                          ),
+                          SizedBox(
+                            height: 10.0,
+                          ),
+                          InputOpsi(
+                            label: 'Pendidikan',
+                            controller: pengaturPendidikan,
+                            daftarOpsi: daftarPendidikan,
+                            fungsiGanti: (hasil) {
+                              if(hasil != null) {
+                                setState(() {
+                                  pengaturPendidikan.text = hasil;
+                                });
+                              }
+                            },
+                          ),
+                          SizedBox(
+                            height: 10.0,
+                          ),
+                          InputOpsi(
+                            label: 'Profesi',
+                            controller: pengaturProfesi,
+                            daftarOpsi: daftarProfesi,
+                            fungsiGanti: (hasil) {
+                              if(hasil != null) {
+                                setState(() {
+                                  pengaturProfesi.text = hasil;
+                                });
+                              }
+                            },
+                          ),
+                          SizedBox(
+                            height: 10.0,
+                          ),
+                          InputOpsi(
+                            label: 'Status Perkawinan',
+                            controller: pengaturStatusPerkawinan,
+                            daftarOpsi: daftarStatusPerkawinan,
+                            fungsiGanti: (hasil) {
+                              if(hasil != null) {
+                                setState(() {
+                                  pengaturStatusPerkawinan.text = hasil;
+                                });
+                              }
+                            },
+                          ),
+                          SizedBox(
+                            height: 10.0,
+                          ),
+                          InputOpsi(
+                            label: 'Status dalam Keluarga',
+                            controller: pengaturStatusDalamKeluarga,
+                            daftarOpsi: daftarStatusDalamKeluarga,
+                            fungsiGanti: (hasil) {
+                              if(hasil != null) {
+                                setState(() {
+                                  pengaturStatusDalamKeluarga.text = hasil;
+                                });
+                              }
+                            },
+                          ),
+                          SizedBox(
+                            height: 10.0,
+                          ),
+                          InputOpsi(
+                            label: 'Kewarganegaraan',
+                            controller: pengaturKewarganegaraan,
+                            daftarOpsi: daftarKewarganegaraan,
+                            fungsiGanti: (hasil) {
+                              if(hasil != null) {
+                                setState(() {
+                                  pengaturKewarganegaraan.text = hasil;
+                                });
+                              }
+                            },
+                          ),
+                          SizedBox(
+                            height: 10.0,
+                          ),
+                          InputTeksGlobal(
+                            label: 'No. Paspor',
+                            controller: pengaturNoPaspor,
+                          ),
+                          SizedBox(
+                            height: 10.0,
+                          ),
+                          InputTeksGlobal(
+                            label: 'No. KITAP',
+                            controller: pengaturNoKITAP,
+                          ),
+                          SizedBox(
+                            height: 10.0,
+                          ),
+                          InputTeksGlobal(
+                            label: 'Nama Ayah',
+                            controller: pengaturNamaAyah,
+                            kapitalisasi: TextCapitalization.characters,
+                          ),
+                          SizedBox(
+                            height: 10.0,
+                          ),
+                          InputTeksGlobal(
+                            label: 'Nama Ibu',
+                            controller: pengaturNamaIbu,
+                            kapitalisasi: TextCapitalization.characters,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(5.0,),
+                child: TombolGlobal(
+                  judul: 'Simpan',
+                  fungsiTekan: () {
+                    if(pengaturNama.text != ''
+                        && pengaturNIK.text != ''
+                        && pengaturJenisKelamin.text != ''
+                        && pengaturTempatLahir.text != ''
+                        && pengaturTanggalLahir.text != ''
+                        && pengaturAgama.text != ''
+                        && pengaturPendidikan.text != ''
+                        && pengaturProfesi.text != ''
+                        && pengaturStatusPerkawinan.text != ''
+                        && pengaturStatusDalamKeluarga.text != ''
+                        && pengaturKewarganegaraan.text != ''
+                        && pengaturNamaAyah.text != ''
+                        && pengaturNamaIbu.text != '') {
+                      if(widget.dataAnggota.isEmpty) {
+                        tutupHalaman(context, [
+                          pengaturNama.text,
+                          pengaturNIK.text,
+                          pengaturJenisKelamin.text,
+                          pengaturTempatLahir.text,
+                          DateFormat('yyyy-MM-dd').format(tanggalLahir),
+                          pengaturAgama.text,
+                          pengaturPendidikan.text,
+                          pengaturProfesi.text,
+                          pengaturStatusPerkawinan.text,
+                          pengaturStatusDalamKeluarga.text,
+                          pengaturKewarganegaraan.text,
+                          pengaturNoPaspor.text,
+                          pengaturNoKITAP.text,
+                          pengaturNamaAyah.text,
+                          pengaturNamaIbu.text,
+                        ]);
+                      } else {
+                        tutupHalaman(context, [
+                          pengaturNama.text,
+                          pengaturNIK.text,
+                          pengaturJenisKelamin.text,
+                          pengaturTempatLahir.text,
+                          DateFormat('yyyy-MM-dd').format(tanggalLahir),
+                          pengaturAgama.text,
+                          pengaturPendidikan.text,
+                          pengaturProfesi.text,
+                          pengaturStatusPerkawinan.text,
+                          pengaturStatusDalamKeluarga.text,
+                          pengaturKewarganegaraan.text,
+                          pengaturNoPaspor.text,
+                          pengaturNoKITAP.text,
+                          pengaturNamaAyah.text,
+                          pengaturNamaIbu.text,
+                        ]);
+                      }
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

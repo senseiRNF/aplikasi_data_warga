@@ -118,8 +118,8 @@ class _HalamanUtamaState extends State<HalamanUtama> {
 
                         });
                         break;
-                      case 'Keterangan Pindah Domisili':
-                        pindahKeHalaman(context, HalamanManajemenPindahDomisili(), (panggilKembali) {
+                      case 'Keterangan Pindah Penduduk':
+                        pindahKeHalaman(context, HalamanManajemenPindah(), (panggilKembali) {
 
                         });
                         break;
@@ -173,7 +173,7 @@ class _HalamanUtamaState extends State<HalamanUtama> {
                         });
                         break;
                       case 'Keterangan Pindah Domisili':
-                        pindahKeHalaman(context, HalamanManajemenPindahDomisili(), (panggilKembali) {
+                        pindahKeHalaman(context, HalamanManajemenPindah(), (panggilKembali) {
 
                         });
                         break;

@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 /// Widget dengan keadaan (stateful Widget)
-
+/// Form Daftar KTP
 class FormKeteranganDaftarKTP extends StatefulWidget {
   final List dataKeterangan;
 
@@ -41,11 +41,13 @@ class _FormKeteranganDaftarKTPState extends State<FormKeteranganDaftarKTP> {
 
     Future.delayed(Duration(seconds: 0), () async {
       if(widget.dataKeterangan.isNotEmpty) {
-        idDokumen = widget.dataKeterangan[0];
+        setState(() {
+          idDokumen = widget.dataKeterangan[0];
+        });
       }
 
-      await muatDaftarKartuKeluarga(widget.dataKeterangan, (idDokumen) async {
-        await muatDaftarAnggotaKeluarga(idDokumen).then((anggota) {
+      await muatDaftarKartuKeluarga(widget.dataKeterangan, (idKK) async {
+        await muatDaftarAnggotaKeluarga(idKK).then((anggota) {
           if (anggota != null) {
             setState(() {
               daftarAnggotaKeluarga = anggota;
@@ -179,7 +181,7 @@ class _FormKeteranganDaftarKTPState extends State<FormKeteranganDaftarKTP> {
                             SizedBox(
                               height: 10.0,
                             ),
-                            InputTanggalBerlaku(
+                            InputTanggalKedepan(
                               label: 'Berlaku Hingga',
                               controller: pengaturTanggalBerlaku,
                               tanggal: tanggalBerlaku,
@@ -312,6 +314,7 @@ class _FormKeteranganDaftarKTPState extends State<FormKeteranganDaftarKTP> {
   }
 }
 
+/// Form SK Kelahiran
 class FormKeteranganKelahiran extends StatefulWidget {
   final List dataKeterangan;
 
@@ -357,11 +360,13 @@ class _FormKeteranganKelahiranState extends State<FormKeteranganKelahiran> {
 
     Future.delayed(Duration(seconds: 0), () async {
       if(widget.dataKeterangan.isNotEmpty) {
-        idDokumen = widget.dataKeterangan[0];
+        setState(() {
+          idDokumen = widget.dataKeterangan[0];
+        });
       }
 
-      await muatDaftarKartuKeluarga(widget.dataKeterangan, (idDokumen) async {
-        await muatDataAyahIbu(idDokumen).then((anggota) {
+      await muatDaftarKartuKeluarga(widget.dataKeterangan, (idKK) async {
+        await muatDataAyahIbu(idKK).then((anggota) {
           if (anggota != null) {
             setState(() {
               daftarAyahIbu = anggota;
@@ -530,30 +535,7 @@ class _FormKeteranganKelahiranState extends State<FormKeteranganKelahiran> {
                                 setState(() {
                                   tanggalLahirAnak = hasil;
                                   pengaturTanggalLahirAnak.text = DateFormat('dd-MM-yyyy').format(hasil);
-
-                                  switch(DateFormat('EEEE').format(hasil)) {
-                                    case 'Sunday':
-                                      pengaturHariLahirAnak.text = 'Minggu';
-                                      break;
-                                    case 'Monday':
-                                      pengaturHariLahirAnak.text = 'Senin';
-                                      break;
-                                    case 'Tuesday':
-                                      pengaturHariLahirAnak.text = 'Selasa';
-                                      break;
-                                    case 'Wednesday':
-                                      pengaturHariLahirAnak.text = 'Rabu';
-                                      break;
-                                    case 'Thursday':
-                                      pengaturHariLahirAnak.text = 'Kamis';
-                                      break;
-                                    case 'Friday':
-                                      pengaturHariLahirAnak.text = 'Jumat';
-                                      break;
-                                    case 'Saturday':
-                                      pengaturHariLahirAnak.text = 'Sabtu';
-                                      break;
-                                  }
+                                  pengaturHariLahirAnak.text = konversiHari(DateFormat('EEEE').format(hasil));
                                 });
                               },
                             ),
@@ -615,27 +597,23 @@ class _FormKeteranganKelahiranState extends State<FormKeteranganKelahiran> {
                                         if(anggota[i][4] == 'SUAMI') {
                                           pengaturNamaAyah.text = anggota[i][0];
                                           pengaturNIKAyah.text = anggota[i][1];
-                                          
-                                          int umurAyah = DateTime.now().year - int.parse(anggota[i][2].toString().substring(0, 4));
-                                          pengaturUmurAyah.text = umurAyah.toString();
+
+                                          pengaturUmurAyah.text = hitungUmur(int.parse(anggota[i][2].toString().substring(0, 4)));
                                         } if(anggota[i][4] == 'ISTRI') {
                                           pengaturNamaIbu.text = anggota[i][0];
                                           pengaturNIKIbu.text = anggota[i][1];
 
-                                          int umurIbu = DateTime.now().year - int.parse(anggota[i][2].toString().substring(0, 4));
-                                          pengaturUmurIbu.text = umurIbu.toString();
+                                          pengaturUmurIbu.text = hitungUmur(int.parse(anggota[i][2].toString().substring(0, 4)));
                                         } if(anggota[i][3] == 'LAKI-LAKI' && anggota[i][4] == 'KEPALA KELUARGA') {
                                           pengaturNamaAyah.text = anggota[i][0];
                                           pengaturNIKAyah.text = anggota[i][1];
 
-                                          int umurAyah = DateTime.now().year - int.parse(anggota[i][2].toString().substring(0, 4));
-                                          pengaturUmurAyah.text = umurAyah.toString();
+                                          pengaturUmurAyah.text = hitungUmur(int.parse(anggota[i][2].toString().substring(0, 4)));
                                         } if(anggota[i][3] == 'PEREMPUAN' && anggota[i][4] == 'KEPALA KELUARGA') {
                                           pengaturNamaIbu.text = anggota[i][0];
                                           pengaturNIKIbu.text = anggota[i][1];
 
-                                          int umurIbu = DateTime.now().year - int.parse(anggota[i][2].toString().substring(0, 4));
-                                          pengaturUmurIbu.text = umurIbu.toString();
+                                          pengaturUmurIbu.text = hitungUmur(int.parse(anggota[i][2].toString().substring(0, 4)));
                                         }
                                       }
                                     });
@@ -868,6 +846,707 @@ class _FormKeteranganKelahiranState extends State<FormKeteranganKelahiran> {
   }
 }
 
+/// Form SK Kematian
+class FormKeteranganKematian extends StatefulWidget {
+  final List dataKeterangan;
+
+  FormKeteranganKematian({
+    @required this.dataKeterangan,
+  });
+
+  @override
+  _FormKeteranganKematianState createState() => _FormKeteranganKematianState();
+}
+
+class _FormKeteranganKematianState extends State<FormKeteranganKematian> {
+  List daftarKartuKeluarga;
+  List daftarAnggotaKeluarga;
+
+  TextEditingController pengaturNoKK = new TextEditingController();
+  TextEditingController pengaturNIK = new TextEditingController();
+  TextEditingController pengaturTempatMeninggal = new TextEditingController();
+  TextEditingController pengaturTanggalMeninggal = new TextEditingController();
+  TextEditingController pengaturHariMeninggal = new TextEditingController();
+  TextEditingController pengaturUsiaMeninggal = new TextEditingController();
+  TextEditingController pengaturTanggalPengajuan = new TextEditingController();
+
+  DateTime tanggalLahir;
+  DateTime tanggalMeninggal;
+  DateTime tanggalPengajuan;
+
+  bool memuat = false;
+
+  String idDokumen;
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.delayed(Duration(seconds: 0), () async {
+      if(widget.dataKeterangan.isNotEmpty) {
+        setState(() {
+          idDokumen = widget.dataKeterangan[0];
+        });
+      }
+
+      await muatDaftarKartuKeluarga(widget.dataKeterangan, (idKK) async {
+        await muatDaftarAnggotaKeluarga(idKK).then((anggota) {
+          if (anggota != null) {
+            setState(() {
+              daftarAnggotaKeluarga = anggota;
+              pengaturNIK.text = widget.dataKeterangan[2];
+            });
+          }
+        });
+
+        setState(() {
+          pengaturNoKK.text = widget.dataKeterangan[1];
+          pengaturTempatMeninggal.text = widget.dataKeterangan[3];
+          tanggalMeninggal = DateTime.parse(widget.dataKeterangan[4]);
+          pengaturTanggalMeninggal.text = DateFormat('dd-MM-yyyy').format(DateTime.parse(widget.dataKeterangan[4]));
+          pengaturHariMeninggal.text = widget.dataKeterangan[5];
+          pengaturUsiaMeninggal.text = widget.dataKeterangan[6];
+          tanggalPengajuan = DateTime.parse(widget.dataKeterangan[7]);
+          pengaturTanggalPengajuan.text = DateFormat('dd-MM-yyyy').format(DateTime.parse(widget.dataKeterangan[7]));
+        });
+      }).then((hasil) {
+        if(hasil != null) {
+          setState(() {
+            daftarKartuKeluarga = hasil;
+          });
+        } else {
+          setState(() {
+            daftarKartuKeluarga = [];
+          });
+        }
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: LatarBelakangGlobal(
+          tampilan: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(5.0,),
+                    child: Material(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100.0,),
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          tutupHalaman(context, null);
+                        },
+                        borderRadius: BorderRadius.circular(100.0,),
+                        child: Padding(
+                          padding: EdgeInsets.all(15.0,),
+                          child: Icon(
+                            Icons.arrow_back,
+                            size: 30.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: TeksGlobal(
+                      isi: 'Data Keterangan',
+                      ukuran: 18.0,
+                    ),
+                  )
+                ],
+              ),
+              daftarKartuKeluarga != null ?
+              daftarKartuKeluarga.isNotEmpty ?
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.all(5.0,),
+                        child: ListView(
+                          children: [
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            InputOpsiKK(
+                              label: 'Nomor Kartu Keluarga',
+                              controller: pengaturNoKK,
+                              daftarOpsi: daftarKartuKeluarga,
+                              fungsiGanti: (hasil) async {
+                                await muatDaftarAnggotaKeluarga(hasil[0]).then((anggota) {
+                                  if(anggota != null) {
+                                    setState(() {
+                                      daftarAnggotaKeluarga = anggota;
+
+                                      pengaturNIK.text = '';
+
+                                      tanggalLahir = null;
+                                    });
+                                  }
+                                });
+
+                                setState(() {
+                                  pengaturNoKK.text = hasil[1];
+                                });
+                              },
+                            ),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            daftarAnggotaKeluarga != null ?
+                            InputOpsiAnggotaKeluarga(
+                              label: 'NIK',
+                              controller: pengaturNIK,
+                              daftarOpsi: daftarAnggotaKeluarga,
+                              fungsiGanti: (hasil) {
+                                setState(() {
+                                  pengaturNIK.text = hasil[0];
+
+                                  tanggalLahir = DateTime.parse(hasil[2]);
+                                });
+                              },
+                            ) : Material(),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            InputTeksGlobal(
+                              label: 'Tempat Meninggal',
+                              controller: pengaturTempatMeninggal,
+                              kapitalisasi: TextCapitalization.words,
+                            ),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            pengaturNIK.text != '' ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                InputTanggal(
+                                  label: 'Tanggal Meninggal',
+                                  controller: pengaturTanggalMeninggal,
+                                  tanggal: tanggalMeninggal,
+                                  fungsiGanti: (hasil) {
+                                    setState(() {
+                                      tanggalMeninggal = hasil;
+
+                                      pengaturTanggalMeninggal.text = DateFormat('dd-MM-yyyy').format(hasil);
+                                      pengaturHariMeninggal.text = konversiHari(DateFormat('EEEE').format(hasil));
+
+                                      int usiaMeninggal = tanggalMeninggal.year - tanggalLahir.year;
+                                      pengaturUsiaMeninggal.text = usiaMeninggal.toString();
+                                    });
+                                  },
+                                ),
+                                SizedBox(
+                                  height: 10.0,
+                                ),
+                                InputNonAktif(
+                                  label: 'Hari Meninggal',
+                                  controller: pengaturHariMeninggal,
+                                ),
+                                SizedBox(
+                                  height: 10.0,
+                                ),
+                                InputNonAktif(
+                                  label: 'Usia Meninggal',
+                                  controller: pengaturUsiaMeninggal,
+                                ),
+                              ],
+                            ) : Material(),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            InputTanggal(
+                              label: 'Tanggal Pengajuan',
+                              controller: pengaturTanggalPengajuan,
+                              tanggal: tanggalPengajuan,
+                              fungsiGanti: (hasil) {
+                                setState(() {
+                                  tanggalPengajuan = hasil;
+                                  pengaturTanggalPengajuan.text = DateFormat('dd-MM-yyyy').format(hasil);
+                                });
+                              },
+                            ),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(5.0,),
+                      child: !memuat ?
+                      TombolGlobal(
+                        judul: 'Simpan',
+                        fungsiTekan: () {
+                          if(pengaturNoKK.text != '' && pengaturNIK.text != '' && pengaturTempatMeninggal.text != '' && pengaturTanggalMeninggal.text != '' && pengaturHariMeninggal.text != '' && pengaturUsiaMeninggal.text != '' && pengaturTanggalPengajuan.text != '') {
+                            dialogOpsi(context, 'Simpan berkas, Anda yakin?', () async {
+                              tutupHalaman(context, null);
+
+                              setState(() {
+                                memuat = true;
+                              });
+
+                              if(idDokumen == null) {
+                                await simpanDataKematian(
+                                  pengaturNoKK.text,
+                                  pengaturNIK.text,
+                                  pengaturTempatMeninggal.text,
+                                  DateFormat('yyyy-MM-dd').format(tanggalMeninggal),
+                                  pengaturHariMeninggal.text,
+                                  pengaturUsiaMeninggal.text,
+                                  DateFormat('yyyy-MM-dd').format(tanggalPengajuan),
+                                ).then((hasil) {
+                                  if(hasil != null && hasil) {
+                                    tutupHalaman(context, null);
+                                  } else {
+                                    setState(() {
+                                      memuat = false;
+                                    });
+
+                                    dialogOK(context, 'Terjadi kesalahan, gagal menyimpan data, silahkan coba lagi', () {
+                                      tutupHalaman(context, null);
+                                    }, () {
+
+                                    });
+                                  }
+                                });
+                              } else {
+                                await ubahDataKematian(
+                                  idDokumen,
+                                  pengaturNoKK.text,
+                                  pengaturNIK.text,
+                                  pengaturTempatMeninggal.text,
+                                  DateFormat('yyyy-MM-dd').format(tanggalMeninggal),
+                                  pengaturHariMeninggal.text,
+                                  pengaturUsiaMeninggal.text,
+                                  DateFormat('yyyy-MM-dd').format(tanggalPengajuan),
+                                ).then((hasil) {
+                                  if(hasil != null && hasil) {
+                                    tutupHalaman(context, null);
+                                  } else {
+                                    setState(() {
+                                      memuat = false;
+                                    });
+
+                                    dialogOK(context, 'Terjadi kesalahan, gagal menyimpan data, silahkan coba lagi', () {
+                                      tutupHalaman(context, null);
+                                    }, () {
+
+                                    });
+                                  }
+                                });
+                              }
+                            }, () {
+                              tutupHalaman(context, null);
+                            });
+                          } else {
+                            dialogOK(context, 'Harap untuk mengisi seluruh data sebelum menyimpan', () {
+                              tutupHalaman(context, null);
+                            }, () {
+
+                            });
+                          }
+                        },
+                      ) : IndikatorProgressGlobal(),
+                    ),
+                  ],
+                ),
+              ) :
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TeksGlobal(
+                      isi: 'Tidak dapat memuat formulir',
+                      ukuran: 18.0,
+                      tebal: true,
+                      posisi: TextAlign.center,
+                    ),
+                    SizedBox(
+                      height: 30.0,
+                    ),
+                    TeksGlobal(
+                      isi: 'Mohon untuk menambahkan data penduduk terlebih dahulu',
+                      ukuran: 16.0,
+                      posisi: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ) :
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TeksGlobal(
+                      isi: 'Tidak dapat memuat formulir',
+                      ukuran: 16.0,
+                      posisi: TextAlign.center,
+                    ),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    IndikatorProgressGlobal(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+}
+
+/// Form SK Pindah Domisil
+class FormKeteranganPindah extends StatefulWidget {
+  final List dataKeterangan;
+
+  FormKeteranganPindah({
+    @required this.dataKeterangan,
+  });
+
+  @override
+  _FormKeteranganPindahState createState() => _FormKeteranganPindahState();
+}
+
+class _FormKeteranganPindahState extends State<FormKeteranganPindah> {
+  TextEditingController pengaturNoSuratPindah = new TextEditingController();
+  TextEditingController pengaturNIK = new TextEditingController();
+  TextEditingController pengaturAlasanPindah = new TextEditingController();
+  TextEditingController pengaturAlamatPindah = new TextEditingController();
+  TextEditingController pengaturRTPindah = new TextEditingController();
+  TextEditingController pengaturRWPindah = new TextEditingController();
+  TextEditingController pengaturDesaPindah = new TextEditingController();
+  TextEditingController pengaturKecamatanPindah = new TextEditingController();
+  TextEditingController pengaturKabupatenPindah = new TextEditingController();
+  TextEditingController pengaturProvinsiPindah = new TextEditingController();
+  TextEditingController pengaturTanggalPindah = new TextEditingController();
+
+  DateTime tanggalPindah;
+
+  bool memuat = false;
+
+  String idDokumen;
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.delayed(Duration(seconds: 0), () async {
+      if(widget.dataKeterangan.isNotEmpty) {
+        setState(() {
+          idDokumen = widget.dataKeterangan[0];
+          pengaturNoSuratPindah.text = widget.dataKeterangan[1];
+          pengaturNIK.text = widget.dataKeterangan[2];
+          pengaturAlasanPindah.text = widget.dataKeterangan[3];
+          pengaturAlamatPindah.text = widget.dataKeterangan[4];
+          pengaturRTPindah.text = widget.dataKeterangan[5];
+          pengaturRWPindah.text = widget.dataKeterangan[6];
+          pengaturDesaPindah.text = widget.dataKeterangan[7];
+          pengaturKecamatanPindah.text = widget.dataKeterangan[8];
+          pengaturKabupatenPindah.text = widget.dataKeterangan[9];
+          pengaturProvinsiPindah.text = widget.dataKeterangan[10];
+          tanggalPindah = DateTime.parse(widget.dataKeterangan[11]);
+          pengaturTanggalPindah.text = DateFormat('dd-MM-yyyy').format(DateTime.parse(widget.dataKeterangan[11]));
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: LatarBelakangGlobal(
+          tampilan: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(5.0,),
+                    child: Material(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100.0,),
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          tutupHalaman(context, null);
+                        },
+                        borderRadius: BorderRadius.circular(100.0,),
+                        child: Padding(
+                          padding: EdgeInsets.all(15.0,),
+                          child: Icon(
+                            Icons.arrow_back,
+                            size: 30.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: TeksGlobal(
+                      isi: 'Data Keterangan',
+                      ukuran: 18.0,
+                    ),
+                  )
+                ],
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.all(5.0,),
+                        child: ListView(
+                          children: [
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            InputTeksGlobal(
+                              label: 'No. Surat Pindah',
+                              controller: pengaturNoSuratPindah,
+                            ),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            InputAngkaTanpaPemisah(
+                              label: 'NIK',
+                              controller: pengaturNIK,
+                            ),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            InputTeksGlobal(
+                              label: 'Alasan Pindah',
+                              controller: pengaturAlasanPindah,
+                              kapitalisasi: TextCapitalization.words,
+                            ),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            InputTeksGlobal(
+                              label: 'Alamat Pindah',
+                              controller: pengaturAlamatPindah,
+                              kapitalisasi: TextCapitalization.words,
+                            ),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: InputAngkaTanpaPemisah(
+                                    label: 'RT Pindah',
+                                    controller: pengaturRTPindah,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 10.0,
+                                ),
+                                Expanded(
+                                  child: InputAngkaTanpaPemisah(
+                                    label: 'RW Pindah',
+                                    controller: pengaturRWPindah,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            InputTeksGlobal(
+                              label: 'Desa/Kelurahan',
+                              controller: pengaturDesaPindah,
+                              kapitalisasi: TextCapitalization.words,
+                            ),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            InputTeksGlobal(
+                              label: 'Kecamatan',
+                              controller: pengaturKecamatanPindah,
+                              kapitalisasi: TextCapitalization.words,
+                            ),
+                            SizedBox(
+                              height: 5.0,
+                            ),
+                            InputOpsi(
+                              label: 'Kabupaten/Kota',
+                              controller: pengaturKabupatenPindah,
+                              daftarOpsi: daftarKota,
+                              fungsiGanti: (hasil) {
+                                setState(() {
+                                  pengaturKabupatenPindah.text = hasil;
+                                });
+                              },
+                            ),
+                            SizedBox(
+                              height: 5.0,
+                            ),
+                            InputOpsi(
+                              label: 'Provinsi',
+                              controller: pengaturProvinsiPindah,
+                              daftarOpsi: daftarProvinsi,
+                              fungsiGanti: (hasil) {
+                                setState(() {
+                                  pengaturProvinsiPindah.text = hasil;
+                                });
+                              },
+                            ),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            InputTanggal(
+                              label: 'Tanggal Pindah',
+                              controller: pengaturTanggalPindah,
+                              tanggal: tanggalPindah,
+                              fungsiGanti: (hasil) {
+                                setState(() {
+                                  tanggalPindah = hasil;
+                                  pengaturTanggalPindah.text = DateFormat('dd-MM-yyyy').format(hasil);
+                                });
+                              },
+                            ),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(5.0,),
+                      child: !memuat ?
+                      TombolGlobal(
+                        judul: 'Simpan',
+                        fungsiTekan: () {
+                          if(pengaturNoSuratPindah.text != '' &&
+                              pengaturNIK.text != '' &&
+                              pengaturAlasanPindah.text != '' &&
+                              pengaturAlamatPindah.text != '' &&
+                              pengaturRTPindah.text != '' &&
+                              pengaturRWPindah.text != '' &&
+                              pengaturDesaPindah.text != '' &&
+                              pengaturKecamatanPindah.text != '' &&
+                              pengaturKabupatenPindah.text != '' &&
+                              pengaturProvinsiPindah.text != '' &&
+                              pengaturTanggalPindah.text != '') {
+                            dialogOpsi(context, 'Simpan berkas, Anda yakin?', () async {
+                              tutupHalaman(context, null);
+
+                              setState(() {
+                                memuat = true;
+                              });
+
+                              if(idDokumen == null) {
+                                await simpanDataPindah(
+                                  pengaturNoSuratPindah.text,
+                                  pengaturNIK.text,
+                                  pengaturAlasanPindah.text,
+                                  pengaturAlamatPindah.text,
+                                  pengaturRTPindah.text,
+                                  pengaturRWPindah.text,
+                                  pengaturDesaPindah.text,
+                                  pengaturKecamatanPindah.text,
+                                  pengaturKabupatenPindah.text,
+                                  pengaturProvinsiPindah.text,
+                                  DateFormat('yyyy-MM-dd').format(tanggalPindah),
+                                ).then((hasil) {
+                                  if(hasil != null && hasil) {
+                                    tutupHalaman(context, null);
+                                  } else {
+                                    setState(() {
+                                      memuat = false;
+                                    });
+
+                                    dialogOK(context, 'Terjadi kesalahan, gagal menyimpan data, silahkan coba lagi', () {
+                                      tutupHalaman(context, null);
+                                    }, () {
+
+                                    });
+                                  }
+                                });
+                              } else {
+                                await ubahDataPindah(
+                                  idDokumen,
+                                  pengaturNoSuratPindah.text,
+                                  pengaturNIK.text,
+                                  pengaturAlasanPindah.text,
+                                  pengaturAlamatPindah.text,
+                                  pengaturRTPindah.text,
+                                  pengaturRWPindah.text,
+                                  pengaturDesaPindah.text,
+                                  pengaturKecamatanPindah.text,
+                                  pengaturKabupatenPindah.text,
+                                  pengaturProvinsiPindah.text,
+                                  DateFormat('yyyy-MM-dd').format(tanggalPindah),
+                                ).then((hasil) {
+                                  if(hasil != null && hasil) {
+                                    tutupHalaman(context, null);
+                                  } else {
+                                    setState(() {
+                                      memuat = false;
+                                    });
+
+                                    dialogOK(context, 'Terjadi kesalahan, gagal menyimpan data, silahkan coba lagi', () {
+                                      tutupHalaman(context, null);
+                                    }, () {
+
+                                    });
+                                  }
+                                });
+                              }
+                            }, () {
+                              tutupHalaman(context, null);
+                            });
+                          } else {
+                            dialogOK(context, 'Harap untuk mengisi seluruh data sebelum menyimpan', () {
+                              tutupHalaman(context, null);
+                            }, () {
+
+                            });
+                          }
+                        },
+                      ) : IndikatorProgressGlobal(),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+}
+
 /// Widget tanpa keadaan (stateless widget)
 
 class InputOpsiKK extends StatelessWidget {
@@ -978,13 +1657,13 @@ class InputOpsiAnggotaKeluarga extends StatelessWidget {
   }
 }
 
-class InputTanggalBerlaku extends StatelessWidget {
+class InputTanggalKedepan extends StatelessWidget {
   final String label;
   final TextEditingController controller;
   final DateTime tanggal;
   final Function fungsiGanti;
 
-  InputTanggalBerlaku({
+  InputTanggalKedepan({
     @required this.label,
     @required this.controller,
     @required this.tanggal,
