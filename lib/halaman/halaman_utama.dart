@@ -1,5 +1,6 @@
 import 'package:aplikasi_data_warga/fungsi/fungsi_global.dart';
 import 'package:aplikasi_data_warga/fungsi/fungsi_spesifik/fungsi_halaman_utama.dart';
+import 'package:aplikasi_data_warga/halaman/halaman_laporan.dart';
 import 'package:aplikasi_data_warga/halaman/halaman_manajemen_berkas.dart';
 import 'package:aplikasi_data_warga/halaman/halaman_manajemen_penduduk.dart';
 import 'package:aplikasi_data_warga/halaman/halaman_manajemen_pengguna.dart';
@@ -197,7 +198,9 @@ class _HalamanUtamaState extends State<HalamanUtama> {
               padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0,),
               child: TombolMenuBerlatar(
                 fungsiTombol: () {
+                  pindahKeHalaman(context, HalamanLaporan(), (panggilKembali) {
 
+                  });
                 },
                 judul: 'Lihat Laporan Desa',
                 gambar: 'aset/gambar/gambar_tombol_3.png',

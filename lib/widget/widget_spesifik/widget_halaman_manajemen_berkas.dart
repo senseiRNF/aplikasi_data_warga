@@ -290,7 +290,7 @@ class _FormKeteranganDaftarKTPState extends State<FormKeteranganDaftarKTP> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     TeksGlobal(
-                      isi: 'Tidak dapat memuat formulir',
+                      isi: 'Sedang memuat formulir',
                       ukuran: 16.0,
                       posisi: TextAlign.center,
                     ),
@@ -822,7 +822,7 @@ class _FormKeteranganKelahiranState extends State<FormKeteranganKelahiran> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     TeksGlobal(
-                      isi: 'Tidak dapat memuat formulir',
+                      isi: 'Sedang memuat formulir',
                       ukuran: 16.0,
                       posisi: TextAlign.center,
                     ),
@@ -1191,7 +1191,7 @@ class _FormKeteranganKematianState extends State<FormKeteranganKematian> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     TeksGlobal(
-                      isi: 'Tidak dapat memuat formulir',
+                      isi: 'Sedang memuat formulir',
                       ukuran: 16.0,
                       posisi: TextAlign.center,
                     ),
